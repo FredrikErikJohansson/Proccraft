@@ -1,7 +1,7 @@
 #include "Window.h"
 
 Window::Window()
-	: width(800), height(600), bufferHeight(0), bufferWidth(0), mainWindow(0), keys{false}
+	: width(960), height(540), bufferHeight(0), bufferWidth(0), mainWindow(0), keys{false}
 {
 
 }
