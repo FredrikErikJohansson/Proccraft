@@ -14,7 +14,6 @@ Mesh::~Mesh()
 void Mesh::CreateMesh(GLfloat* vertices, unsigned int* indices, unsigned int numOfVertices, unsigned int numOfIndices)
 {
 	indexCount = numOfIndices;
-
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
@@ -39,6 +38,8 @@ void Mesh::CreateMesh(GLfloat* vertices, unsigned int* indices, unsigned int num
 
 void Mesh::RenderMesh()
 {
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CW);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
