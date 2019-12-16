@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/noise.hpp>
 
-#include "Mesh.h"
+#include "Chunk.h"
 
 class World
 {
@@ -15,7 +15,7 @@ public:
 	World();
 	~World();
 
-	void generateWorld(float xPos, float zPos, std::vector<Mesh*> &meshList);
+	void generateWorld(float xPos, float zPos, std::vector<Chunk*> & chunkList);
 	float getHeight(); //Maybe not neccesary if we create blocks in this class
 
 private:

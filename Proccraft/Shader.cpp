@@ -1,7 +1,8 @@
 #include "Shader.h"
 
 Shader::Shader()
-	: shaderID(0), uniformModel(0), uniformProjection(0), uniformView(0), uniformAmbientIntensity(0), uniformAmbientColor(0), uniformDirection(0), uniformDiffuseIntensity(0)
+	: shaderID(0), uniformModel(0), uniformProjection(0), uniformView(0), uniformAmbientIntensity(0), uniformAmbientColor(0), 
+	uniformDirection(0), uniformDiffuseIntensity(0), uniformEyePosition(0), uniformShininess(0), uniformSpecularIntensity(0)
 {
 }
 

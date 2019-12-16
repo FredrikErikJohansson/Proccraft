@@ -10,7 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Window.h"
-#include "Mesh.h"
+#include "Chunk.h"
 #include "Shader.h"
 #include "Camera.h"
 #include "Light.h"
@@ -22,7 +22,7 @@
 const float toRadians = 3.14159265f / 180.0f;
 
 Window mainWindow;
-std::vector<Mesh*> meshList;
+std::vector<Chunk*> chunkList;
 std::vector<Shader*> shaderList;
 Camera camera;
 World world;
@@ -54,11 +54,10 @@ void CreateShaders()
 
 int main()
 {
-	glEnable(GL_CULL_FACE);
 	mainWindow = Window(960, 540);
 	mainWindow.Initialize();
 
-	world.generateWorld(0.0f, 0.0f, meshList);
+	world.generateWorld(0.0f, 0.0f, chunkList);
 
 	//CreateObjects();
 	CreateShaders();
@@ -112,15 +111,16 @@ int main()
 		glm::mat4 model(1.0f);
 		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
 		//model = glm::rotate(model, increment * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+		//model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
+		//printf("Camera: %f , %f, %f \n", camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
-		for (int i = 0; i < 10000; i++)
-		{
-			meshList[i]->RenderMesh();
-		}
+		//for (int i = 0; i < 100*10s; i++)
+		//{
+			chunkList[0]->renderChunk();
+		//}
 
 
 		glUseProgram(0);
