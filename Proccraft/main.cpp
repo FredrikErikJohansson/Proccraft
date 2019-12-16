@@ -15,6 +15,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "World.h"
+#include "Material.h"
 
 #include <glm/gtc/noise.hpp>
 
@@ -25,6 +26,9 @@ std::vector<Mesh*> meshList;
 std::vector<Shader*> shaderList;
 Camera camera;
 World world;
+
+Material shinyMaterial;
+Material dullMaterial;
 
 Light mainLight;
 
@@ -61,9 +65,14 @@ int main()
 
 	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.2f);
 
-	mainLight = Light(1.0f, 1.0f, 1.0f, 0.2f, 2.5f, 3.0f, -2.0f, 1.0f);
+	shinyMaterial = Material(1.0f, 32.0f);
+	dullMaterial = Material(0.3f, 4.0f);
 
-	GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformAmbientIntensity = 0, uniformAmbientColor = 0, uniformDiffuseIntensity = 0, uniformDirection = 0;
+	mainLight = Light(1.0f, 1.0f, 1.0f, 0.2f, -2.5f, 3.0f, 2.0f, 0.3f);
+
+	GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformAmbientIntensity = 0, uniformEyePosition = 0;
+	GLuint uniformAmbientColor = 0, uniformDiffuseIntensity = 0, uniformDirection = 0;
+	GLuint uniformSpecularIntensity = 0, uniformShininess = 0;
 	glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 100.0f);
 
 	//Render
@@ -90,16 +99,23 @@ int main()
 		uniformAmbientIntensity = shaderList[0]->GetAmbientIntensityLocation();
 		uniformDiffuseIntensity = shaderList[0]->GetDiffuseIntensityLocation();
 		uniformDirection = shaderList[0]->GetDirectionLocation();
+		uniformEyePosition = shaderList[0]->GetEyePositionLocation();
+		uniformSpecularIntensity = shaderList[0]->GetSpecularIntensityLocation();
+		uniformShininess = shaderList[0]->GetShininessLocation();
 
 		mainLight.UseLight(uniformAmbientIntensity, uniformAmbientColor, uniformDiffuseIntensity, uniformDirection);
+
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
 		glm::mat4 model(1.0f);
 		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
 		//model = glm::rotate(model, increment * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+		dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+
 
 		for (int i = 0; i < 10000; i++)
 		{
