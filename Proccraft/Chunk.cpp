@@ -15,114 +15,119 @@ Chunk::~Chunk()
 void Chunk::generateChunk(std::vector<Chunk*>& chunkList)
 {
 	int counter = 0;
-	int size = 8;
-	std::vector<Block*> blockList;
+	const int size = 64;
+	float lastHeight = 0;
+	float heights[size] = { 0 };
+	float diffZ = 0.0f;
+	float diffX = 0.0f;
 
-	//GLfloat* resultVert = new GLfloat[144 * size * size * size];
-	//unsigned int* resultInd = new unsigned int[36 * size * size * size];
+	const int n = size * size * 144;
+	const int m = size * size * 36;
 
+	GLfloat* chunkVertices = new GLfloat[n];
+	unsigned int* chunkIndices = new unsigned int[m];
+
+	//TODO: Move height logic to a function
+	//Something seems to be wrong with normals
+	//Maybe they are to short and is inside objects?
 	for (int x = 0; x < size; x++)
 	{
 		for (int z = 0; z < size; z++)
 		{
-			//float h = floor(20 * (glm::simplex(glm::vec2(x / 64.0f, z / 64.0f))));
-			for (int y = 0; y < 2; y++)
-			{
-				//Generate whole chunk
-				Block* block = new Block();
-				block->generateBlock(x, y, z, blockList);
-			}
+			float y = floor(20 * (glm::simplex(glm::vec2(x / 64.0f, z / 64.0f))));
+
+			if(x != 0)
+				diffX = (y - heights[z]);
+
+			heights[z] = y;
+
+			diffZ = (y - lastHeight);
+			lastHeight = y;
+			if (abs(diffZ) < abs(diffX))
+				diffZ = diffX;
+
+			if (diffZ == 0.0f || z == 0) diffZ = 1.0f;
+
+			float translate = -(diffZ / 2.0f);
+
+			if (translate < 0) translate += 0.5f;
+			else translate -= 0.5f;
+
+			float scale = diffZ;
+
+			//TODO: Refactor code to classes
+			//Check vertices and indices order
+			GLfloat vertices[] = {
+				//0
+				x - 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		0.0f, 0.0f, 1.0f,
+				x - 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		-1.0f, 0.0f, 0.0f,
+				x - 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		0.0f, -1.0f, 0.0f,
+
+				//3
+				x + 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		0.0f, 0.0f, 1.0f,
+				x + 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		1.0f, 0.0f, 0.0f,
+				x + 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		0.0f, -1.0f, 0.0f,
+
+				//6
+				x + 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		0.0f, 0.0f, 1.0f,
+				x + 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		1.0f, 0.0f, 0.0f,
+				x + 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		0.0f, 1.0f, 0.0f,
+
+				//9
+				x - 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		0.0f, 0.0f, 1.0f,
+				x - 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		-1.0f, 0.0f, 0.0f,
+				x - 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		0.0f, 1.0f, 0.0f,
+
+				//12
+				x - 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		-1.0f, 0.0f, 0.0f,
+				x - 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		0.0f, 0.0f, -1.0f,
+				x - 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		0.0f, -1.0f, 0.0f,
+
+				//15
+				x + 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		0.0f, 0.0f, -1.0f,
+				x + 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		1.0f, 0.0f, 0.0f,
+				x + 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		0.0f, -1.0f, 0.0f,
+
+				//18
+				x + 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		0.0f, 0.0f, -1.0f,
+				x + 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		1.0f, 0.0f, 0.0f,
+				x + 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		0.0f, 1.0f, 0.0f,
+
+				//21
+				x - 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		-1.0f, 0.0f, 0.0f,
+				x - 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		0.0f, 0.0f, -1.0f,
+				x - 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		0.0f, 1.0f, 0.0f,
+			};
+
+			unsigned int indices[] = {
+				0, 3, 6,	//Front
+				6, 9, 0,
+				12, 1, 10,	//Left
+				10, 21, 12,
+				15, 13, 22,	//Back
+				22, 18, 15,
+				4, 16, 19,	//Right
+				19, 7, 4,
+				11, 8, 20,	//Up
+				20, 23, 11,
+				14, 17, 5,	//Down
+				5, 2, 14
+			};
+
+
+
+			for (int i = 0; i < 144; i++)
+				chunkVertices[i + 144 * counter] = vertices[i];
+
+			for (int i = 0; i < 36; i++)
+				chunkIndices[i + 36*counter] = indices[i] + 24*counter;
+
+			counter++;
 		}
 	}
-
-	//Only send the vetices and faces needed
-	//Check if there is a block in 6 neighbour sides
-	//if true dont take that side
-	//else use those vertices and indices for chunk
-	//use the center of the block and check +1 in x, y and z
-
-	std::vector<GLfloat> chunkVertices;
-	std::vector<unsigned int> chunkIndices;	
-	
-
-	for (int i = 0; i < blockList.size(); i++)
-	{
-		Block* currentBlock = blockList.at(i);
-		glm::vec3 blockPosI = currentBlock->getPosition();
-		bool px = false, nx = false, py = false, ny = false, pz = false, nz = false;
-
-		for (int j = 0; j < blockList.size(); j++)
-		{
-			
-			//if (j == i) continue;
-
-			glm::vec3 blockPosJ = blockList.at(j)->getPosition();
-
-			//PX
-			if (((blockPosI.x + 1) == blockPosJ.x) && (blockPosI.y == blockPosJ.y) && (blockPosI.z == blockPosJ.z)) 
-				px = true;
-			//NX
-			if (((blockPosI.x - 1) == blockPosJ.x) && (blockPosI.y == blockPosJ.y) && (blockPosI.z == blockPosJ.z)) 
-				nx = true;
-			//PY
-			if ((blockPosI.x == blockPosJ.x) && ((blockPosI.y + 1) == blockPosJ.y) && (blockPosI.z == blockPosJ.z)) 
-				py = true;
-			//NY
-			if ((blockPosI.x == blockPosJ.x) && ((blockPosI.y - 1) == blockPosJ.y) && (blockPosI.z == blockPosJ.z)) 
-				ny = true;
-			//PZ
-			if ((blockPosI.x == blockPosJ.x) && (blockPosI.y == blockPosJ.y) && ((blockPosI.z + 1) == blockPosJ.z)) 
-				pz = true;
-			//NZ
-			if ((blockPosI.x == blockPosJ.x) && (blockPosI.y == blockPosJ.y) && ((blockPosI.z - 1) == blockPosJ.z)) 
-				nz = true;
-
-			//if (px || nx || py || ny || pz || nz)
-				//std::cout << "hello" << std::endl;
-
-			//Add visible vertices to chunk
-			//Add 4 blockPosI vertices in its positiveX side (px) and their normals + indices
-			if (!px) {
-				for (int k = 0; k < 24; k++) chunkVertices.push_back(currentBlock->getPX().at(k));
-				for (int k = 0; k < 6; k++) chunkIndices.push_back(currentBlock->getIndices().at(k) + 4 * counter);
-				counter++;
-			} 
-			if (!nx) {
-				for (int k = 0; k < 24; k++) chunkVertices.push_back(currentBlock->getNX().at(k));
-				for (int k = 0; k < 6; k++) chunkIndices.push_back(currentBlock->getIndices().at(k) + 4 * counter);
-				counter++;
-			}
-			if (!py) {
-				for (int k = 0; k < 24; k++) chunkVertices.push_back(currentBlock->getPY().at(k));
-				for (int k = 0; k < 6; k++) chunkIndices.push_back(currentBlock->getIndices().at(k) + 4 * counter);
-				counter++;
-			}
-			if (!ny) {
-				for (int k = 0; k < 24; k++) chunkVertices.push_back(currentBlock->getNY().at(k));
-				for (int k = 0; k < 6; k++) chunkIndices.push_back(currentBlock->getIndices().at(k) + 4 * counter);
-				counter++;
-			}
-			if (!pz) {
-				for (int k = 0; k < 24; k++) chunkVertices.push_back(currentBlock->getPZ().at(k));
-				for (int k = 0; k < 6; k++) chunkIndices.push_back(currentBlock->getIndices().at(k) + 4 * counter);
-				counter++;
-			}
-			if (!nz) {
-				for (int k = 0; k < 24; k++) chunkVertices.push_back(currentBlock->getNZ().at(k));
-				for (int k = 0; k < 6; k++) chunkIndices.push_back(currentBlock->getIndices().at(k) + 4 * counter);
-				counter++;
-			}
-		}
-	}
-
-	int n = chunkVertices.size();
-	int m = chunkIndices.size();
-	GLfloat* a = &chunkVertices[0];
-	unsigned int* b = &chunkIndices[0];
-
 
 	Chunk* chunk = new Chunk();
-	chunk->createChunk(a, b, n, m);
+	chunk->createChunk(chunkVertices, chunkIndices, n, m);
 	chunkList.push_back(chunk);
 }
 
@@ -153,7 +158,7 @@ void Chunk::createChunk(GLfloat* vertices, unsigned int* indices, unsigned int n
 
 void Chunk::renderChunk()
 {
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);

@@ -5,7 +5,6 @@
 #include <GL/glew.h>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/noise.hpp>
 
 #include "Chunk.h"
 
