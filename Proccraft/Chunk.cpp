@@ -12,12 +12,12 @@ Chunk::~Chunk()
 	clearChunk();
 }
 
-void Chunk::generateChunk(std::vector<Chunk*>& chunkList)
+void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList, float* lastHeightPX, float* lastHeightNX, float* lastHeightPZ, float* lastHeightNZ)
 {
 	int counter = 0;
-	const int size = 64;
-	float lastHeight = 0;
-	float heights[size] = { 0 };
+	const int size = 128;
+	//float lastHeight = 0;
+	//float heights[size] = { 0 };
 	float diffZ = 0.0f;
 	float diffX = 0.0f;
 
@@ -30,32 +30,30 @@ void Chunk::generateChunk(std::vector<Chunk*>& chunkList)
 	//TODO: Move height logic to a function
 	//Something seems to be wrong with normals
 	//Maybe they are to short and is inside objects?
-	for (int x = 0; x < size; x++)
+	for (int x = 0 + xPos; x < size + xPos; x++)
 	{
-		for (int z = 0; z < size; z++)
+		for (int z = 0 + zPos; z < size + zPos; z++)
 		{
 			float y = floor(20 * (glm::simplex(glm::vec2(x / 64.0f, z / 64.0f))));
 
-			if(x != 0)
-				diffX = (y - heights[z]);
+			//if (x == xPos) lastHeightNX[z - zPos] = y;
+			//if (x == size + xPos - 1) lastHeightPZ[z - zPos] = y;
 
-			heights[z] = y;
+			//Calculate last Heights
+			if(x != xPos) diffX = (y - lastHeightPX[z - zPos]);
+			lastHeightPX[z - zPos] = y;
+			diffZ = (y - lastHeightNZ[x - xPos]);
+			lastHeightNZ[x - xPos] = y;
 
-			diffZ = (y - lastHeight);
-			lastHeight = y;
+			//Determine how much to scale and translate
 			if (abs(diffZ) < abs(diffX))
 				diffZ = diffX;
-
-			if (diffZ == 0.0f || z == 0) diffZ = 1.0f;
-
+			if (diffZ == 0.0f || z == 0 + zPos) diffZ = 1.0f;
 			float translate = -(diffZ / 2.0f);
-
 			if (translate < 0) translate += 0.5f;
 			else translate -= 0.5f;
-
 			float scale = diffZ;
 
-			//TODO: Refactor code to classes
 			//Check vertices and indices order
 			GLfloat vertices[] = {
 				//0

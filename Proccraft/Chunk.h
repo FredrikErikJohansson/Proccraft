@@ -4,6 +4,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/noise.hpp>
+#include <string>
 
 #include "Block.h"
 
@@ -13,7 +14,7 @@ public:
 	Chunk();
 	~Chunk();
 
-	void generateChunk(std::vector<Chunk*>& chunkList);
+	void generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList, float* lastHeightPX, float* lastHeightNX, float* lastHeightPZ, float* lastHeightNZ);
 	void createChunk(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices);
 	void renderChunk();
 	void clearChunk();

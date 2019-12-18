@@ -13,10 +13,12 @@ World::~World()
 
 }
 
-void World::generateWorld(float xPos, float zPos, std::vector<Chunk*> & chunkList)
+void World::generateWorld(int xPos, int zPos, std::vector<Chunk*> & chunkList, float* lastHeightPX, float* lastHeightNX, float* lastHeightPZ, float* lastHeightNZ)
 {
+
 	Chunk* chunk = new Chunk();
-	chunk->generateChunk(chunkList);
+	chunk->generateChunk(xPos, zPos, chunkList, lastHeightPX, lastHeightNX, lastHeightPZ, lastHeightNZ);
+
 }
 
 float World::getHeight()

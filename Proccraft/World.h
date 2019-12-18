@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 #include <GL/glew.h>
 
@@ -14,7 +15,7 @@ public:
 	World();
 	~World();
 
-	void generateWorld(float xPos, float zPos, std::vector<Chunk*> & chunkList);
+	void generateWorld(int xPos, int zPos, std::vector<Chunk*> & chunkList, float* lastHeightPX, float* lastHeightNX, float* lastHeightPZ, float* lastHeightNZ);
 	float getHeight(); //Maybe not neccesary if we create blocks in this class
 
 private:

@@ -57,7 +57,29 @@ int main()
 	mainWindow = Window(960, 540);
 	mainWindow.Initialize();
 
-	world.generateWorld(0.0f, 0.0f, chunkList);
+	const int wSize = 256;
+	const int cSize = 128;
+
+	int dummy = -wSize;
+	int bigDummy = -wSize;
+	int counter = 0;
+	float lastHeightPX[cSize] = { 0 };
+	float lastHeightNX[cSize] = { 0 };
+	float lastHeightPZ[cSize] = { 0 };
+	float lastHeightNZ[cSize] = { 0 };
+
+	while (bigDummy < wSize)
+	{
+		while (dummy < wSize)
+		{
+			world.generateWorld(dummy, bigDummy, chunkList, lastHeightPX, lastHeightNX, lastHeightPZ, lastHeightNZ);
+			dummy += cSize;
+			counter++;
+		}
+		bigDummy += cSize;
+		dummy = -wSize;
+	}
+		
 
 	//CreateObjects();
 	CreateShaders();
@@ -109,7 +131,7 @@ int main()
 		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
 		glm::mat4 model(1.0f);
-		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
+		model = glm::translate(model, glm::vec3(0.0f, -10.0f, -0.0f));
 		//model = glm::rotate(model, increment * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -117,9 +139,10 @@ int main()
 
 		//printf("Camera: %f , %f, %f \n", camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
-		//for (int i = 0; i < 100*10s; i++)
+		//for (int i = 0; i < 5; i++)
 		//{
-			chunkList[0]->renderChunk();
+		for(int i = 0; i < counter; i++)
+			chunkList[i]->renderChunk();
 		//}
 
 
