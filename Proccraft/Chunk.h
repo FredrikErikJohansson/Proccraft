@@ -14,7 +14,7 @@ public:
 	Chunk();
 	~Chunk();
 
-	void generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList, float* lastHeightPX, float* lastHeightNX, float* lastHeightPZ, float* lastHeightNZ);
+	void generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList);
 	void createChunk(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices);
 	void renderChunk();
 	void clearChunk();

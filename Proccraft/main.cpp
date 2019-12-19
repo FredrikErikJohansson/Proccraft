@@ -63,16 +63,12 @@ int main()
 	int dummy = -wSize;
 	int bigDummy = -wSize;
 	int counter = 0;
-	float lastHeightPX[cSize] = { 0 };
-	float lastHeightNX[cSize] = { 0 };
-	float lastHeightPZ[cSize] = { 0 };
-	float lastHeightNZ[cSize] = { 0 };
 
 	while (bigDummy < wSize)
 	{
 		while (dummy < wSize)
 		{
-			world.generateWorld(dummy, bigDummy, chunkList, lastHeightPX, lastHeightNX, lastHeightPZ, lastHeightNZ);
+			world.generateWorld(dummy, bigDummy, chunkList);
 			dummy += cSize;
 			counter++;
 		}

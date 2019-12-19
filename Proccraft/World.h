@@ -15,7 +15,7 @@ public:
 	World();
 	~World();
 
-	void generateWorld(int xPos, int zPos, std::vector<Chunk*> & chunkList, float* lastHeightPX, float* lastHeightNX, float* lastHeightPZ, float* lastHeightNZ);
+	void generateWorld(int xPos, int zPos, std::vector<Chunk*> & chunkList);
 	float getHeight(); //Maybe not neccesary if we create blocks in this class
 
 private:

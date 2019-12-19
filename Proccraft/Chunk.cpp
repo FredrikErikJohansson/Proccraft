@@ -12,14 +12,12 @@ Chunk::~Chunk()
 	clearChunk();
 }
 
-void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList, float* lastHeightPX, float* lastHeightNX, float* lastHeightPZ, float* lastHeightNZ)
+void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList)
 {
 	int counter = 0;
 	const int size = 128;
-	//float lastHeight = 0;
-	//float heights[size] = { 0 };
-	float diffZ = 0.0f;
-	float diffX = 0.0f;
+	float amplitude = 20.0f;
+	float scale = 0;
 
 	const int n = size * size * 144;
 	const int m = size * size * 36;
@@ -27,74 +25,55 @@ void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList, fl
 	GLfloat* chunkVertices = new GLfloat[n];
 	unsigned int* chunkIndices = new unsigned int[m];
 
-	//TODO: Move height logic to a function
-	//Something seems to be wrong with normals
-	//Maybe they are to short and is inside objects?
 	for (int x = 0 + xPos; x < size + xPos; x++)
 	{
 		for (int z = 0 + zPos; z < size + zPos; z++)
 		{
-			float y = floor(20 * (glm::simplex(glm::vec2(x / 64.0f, z / 64.0f))));
+			float y = floor(amplitude * (glm::simplex(glm::vec2(x / 64.0f, z / 64.0f))));
 
-			//if (x == xPos) lastHeightNX[z - zPos] = y;
-			//if (x == size + xPos - 1) lastHeightPZ[z - zPos] = y;
+			scale = amplitude/5.0f;
+			if (scale < 1.0f) scale = 1.0f;
 
-			//Calculate last Heights
-			if(x != xPos) diffX = (y - lastHeightPX[z - zPos]);
-			lastHeightPX[z - zPos] = y;
-			diffZ = (y - lastHeightNZ[x - xPos]);
-			lastHeightNZ[x - xPos] = y;
-
-			//Determine how much to scale and translate
-			if (abs(diffZ) < abs(diffX))
-				diffZ = diffX;
-			if (diffZ == 0.0f || z == 0 + zPos) diffZ = 1.0f;
-			float translate = -(diffZ / 2.0f);
-			if (translate < 0) translate += 0.5f;
-			else translate -= 0.5f;
-			float scale = diffZ;
-
-			//Check vertices and indices order
 			GLfloat vertices[] = {
 				//0
-				x - 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		0.0f, 0.0f, 1.0f,
-				x - 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		-1.0f, 0.0f, 0.0f,
-				x - 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		0.0f, -1.0f, 0.0f,
+				x - 0.5f, (y - 0.5f * scale), z - 0.5f,		0.0f, 0.0f, 1.0f,
+				x - 0.5f, (y - 0.5f * scale), z - 0.5f,		-1.0f, 0.0f, 0.0f,
+				x - 0.5f, (y - 0.5f * scale), z - 0.5f,		0.0f, -1.0f, 0.0f,
 
 				//3
-				x + 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		0.0f, 0.0f, 1.0f,
-				x + 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		1.0f, 0.0f, 0.0f,
-				x + 0.5f, (y - 0.5f * scale + translate), z - 0.5f,		0.0f, -1.0f, 0.0f,
+				x + 0.5f, (y - 0.5f * scale), z - 0.5f,		0.0f, 0.0f, 1.0f,
+				x + 0.5f, (y - 0.5f * scale), z - 0.5f,		1.0f, 0.0f, 0.0f,
+				x + 0.5f, (y - 0.5f * scale), z - 0.5f,		0.0f, -1.0f, 0.0f,
 
 				//6
-				x + 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		0.0f, 0.0f, 1.0f,
-				x + 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		1.0f, 0.0f, 0.0f,
-				x + 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		0.0f, 1.0f, 0.0f,
+				x + 0.5f, (y + 0.5f * scale), z - 0.5f,		0.0f, 0.0f, 1.0f,
+				x + 0.5f, (y + 0.5f * scale), z - 0.5f,		1.0f, 0.0f, 0.0f,
+				x + 0.5f, (y + 0.5f * scale), z - 0.5f,		0.0f, 1.0f, 0.0f,
 
 				//9
-				x - 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		0.0f, 0.0f, 1.0f,
-				x - 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		-1.0f, 0.0f, 0.0f,
-				x - 0.5f, (y + 0.5f * scale + translate), z - 0.5f,		0.0f, 1.0f, 0.0f,
+				x - 0.5f, (y + 0.5f * scale), z - 0.5f,		0.0f, 0.0f, 1.0f,
+				x - 0.5f, (y + 0.5f * scale), z - 0.5f,		-1.0f, 0.0f, 0.0f,
+				x - 0.5f, (y + 0.5f * scale), z - 0.5f,		0.0f, 1.0f, 0.0f,
 
 				//12
-				x - 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		-1.0f, 0.0f, 0.0f,
-				x - 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		0.0f, 0.0f, -1.0f,
-				x - 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		0.0f, -1.0f, 0.0f,
+				x - 0.5f, (y - 0.5f * scale), z + 0.5f,		-1.0f, 0.0f, 0.0f,
+				x - 0.5f, (y - 0.5f * scale), z + 0.5f,		0.0f, 0.0f, -1.0f,
+				x - 0.5f, (y - 0.5f * scale), z + 0.5f,		0.0f, -1.0f, 0.0f,
 
 				//15
-				x + 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		0.0f, 0.0f, -1.0f,
-				x + 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		1.0f, 0.0f, 0.0f,
-				x + 0.5f, (y - 0.5f * scale + translate), z + 0.5f,		0.0f, -1.0f, 0.0f,
+				x + 0.5f, (y - 0.5f * scale), z + 0.5f,		0.0f, 0.0f, -1.0f,
+				x + 0.5f, (y - 0.5f * scale), z + 0.5f,		1.0f, 0.0f, 0.0f,
+				x + 0.5f, (y - 0.5f * scale), z + 0.5f,		0.0f, -1.0f, 0.0f,
 
 				//18
-				x + 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		0.0f, 0.0f, -1.0f,
-				x + 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		1.0f, 0.0f, 0.0f,
-				x + 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		0.0f, 1.0f, 0.0f,
+				x + 0.5f, (y + 0.5f * scale), z + 0.5f,		0.0f, 0.0f, -1.0f,
+				x + 0.5f, (y + 0.5f * scale), z + 0.5f,		1.0f, 0.0f, 0.0f,
+				x + 0.5f, (y + 0.5f * scale), z + 0.5f,		0.0f, 1.0f, 0.0f,
 
 				//21
-				x - 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		-1.0f, 0.0f, 0.0f,
-				x - 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		0.0f, 0.0f, -1.0f,
-				x - 0.5f, (y + 0.5f * scale + translate), z + 0.5f,		0.0f, 1.0f, 0.0f,
+				x - 0.5f, (y + 0.5f * scale), z + 0.5f,		-1.0f, 0.0f, 0.0f,
+				x - 0.5f, (y + 0.5f * scale), z + 0.5f,		0.0f, 0.0f, -1.0f,
+				x - 0.5f, (y + 0.5f * scale), z + 0.5f,		0.0f, 1.0f, 0.0f,
 			};
 
 			unsigned int indices[] = {
