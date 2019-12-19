@@ -16,7 +16,7 @@ void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList)
 {
 	int counter = 0;
 	const int size = 128;
-	float amplitude = 20.0f;
+	float amplitude = 40.0f;
 	float scale = 0;
 
 	const int n = size * size * 144;
@@ -29,7 +29,9 @@ void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList)
 	{
 		for (int z = 0 + zPos; z < size + zPos; z++)
 		{
-			float y = floor(amplitude * (glm::simplex(glm::vec2(x / 64.0f, z / 64.0f))));
+			//Layered noise functions to determine height
+			float y = floor(amplitude * (glm::simplex(glm::vec2(x / 128.0f, z / 128.0f))));
+			y += floor(amplitude/10.0f * (glm::simplex(glm::vec2(x / 16.0f, z / 16.0f))));
 
 			scale = amplitude/5.0f;
 			if (scale < 1.0f) scale = 1.0f;

@@ -1,7 +1,7 @@
 #version 330								
 
-in vec4 vColor;
-in vec3 Normal;			
+in vec3 Normal;	
+in vec4 Position;	
 in vec3 FragPos;				
 
 out vec4 color;
@@ -22,11 +22,10 @@ struct Material
 
 uniform DirectionalLight directionalLight;
 uniform Material material;
-
 uniform vec3 eyePosition;
 
 void main()										
-{									
+{						
 	vec4 ambientColor = vec4(directionalLight.color, 1.0f) * directionalLight.ambientIntensity;
 	
 	float diffuseFactor = max(dot(normalize(Normal), normalize(directionalLight.direction)), 0.0f);
@@ -45,6 +44,11 @@ void main()
 			specularColor = vec4(directionalLight.color * material.specularIntensity * specularFactor, 1.0f);
 		}
 	}
-
-	color = vColor * ( ambientColor + diffuseColor + specularColor);	
+			
+	//TODO: Add noise
+	//Change color depending on position
+	if(Position.y <= 0.0) color = vec4(0.94f, 0.87f, 0.44f, 1.0f);
+    else color = vec4(0.4f, 1.0f, 0.2f, 1.0f);
+	
+	color = color * ( ambientColor + diffuseColor);
 }												
