@@ -30,6 +30,7 @@ int Window::Initialize()
 
 	//Setup GLFW window props
 	//OpenGL version
+	glfwWindowHint(GLFW_SAMPLES, 32);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

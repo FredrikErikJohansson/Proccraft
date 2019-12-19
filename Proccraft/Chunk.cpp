@@ -135,6 +135,7 @@ void Chunk::createChunk(GLfloat* vertices, unsigned int* indices, unsigned int n
 
 void Chunk::renderChunk()
 {
+	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	glBindVertexArray(VAO);
