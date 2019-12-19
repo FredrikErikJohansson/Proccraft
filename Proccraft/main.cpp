@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -56,12 +57,16 @@ int main()
 	mainWindow = Window(960, 540);
 	mainWindow.Initialize();
 
+	int stupidTimer = 0;
+
 	const int wSize = 256;
-	const int cSize = 128;
+	const int cSize = 64;
+	const int side = (wSize / cSize) * 2;
 
 	int dummy = -wSize;
 	int bigDummy = -wSize;
 	int counter = 0;
+	bool inside = true;
 
 	while (bigDummy < wSize)
 	{
@@ -79,7 +84,7 @@ int main()
 	//CreateObjects();
 	CreateShaders();
 
-	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.2f);
+	camera = Camera(glm::vec3(10.0f, 200.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 50.0f, 0.2f);
 
 	//shinyMaterial = Material(1.0f, 32.0f);
 	dullMaterial = Material(0.3f, 4.0f);
@@ -90,7 +95,7 @@ int main()
 	GLuint uniformAmbientIntensity = 0, uniformEyePosition = 0;
 	GLuint uniformAmbientColor = 0, uniformDiffuseIntensity = 0, uniformDirection = 0;
 	GLuint uniformSpecularIntensity = 0, uniformShininess = 0;
-	glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
 
 	//Render
 	while (!mainWindow.getShouldClose())
@@ -129,14 +134,37 @@ int main()
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, -10.0f, -0.0f));
 		//model = glm::rotate(model, increment * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+		//model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
 		//printf("Camera: %f , %f, %f \n", camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
-		for(int i = 0; i < counter; i++)
+		for(size_t i = 0; i < chunkList.size(); i++)
 			chunkList[i]->renderChunk();
+
+		if ((int)floor(camera.getCameraPosition().z) % cSize == 0) stupidTimer++;
+		else stupidTimer = 0;
+
+
+		//TODO: Add flag to only run this once
+		if (stupidTimer == 1 && (int)floor(camera.getCameraPosition().z) % cSize == 0)
+		{
+			//Sort by PX ascending
+			std::sort(chunkList.begin(), chunkList.end(), [](const Chunk* lhs, const Chunk* rhs)
+			{
+				//PX - NX - PZ - NZ
+				return lhs->edgeVertices[2] < rhs->edgeVertices[2];
+			});
+
+			if(chunkList.size() == counter)
+				chunkList.erase(chunkList.begin(), chunkList.begin() + side);
+				
+			for (int i = 0; i < side; i++)
+				chunk.generateChunk(dummy + cSize * i, bigDummy, chunkList);
+
+			bigDummy += cSize;
+		}	
 
 		glUseProgram(0);
 

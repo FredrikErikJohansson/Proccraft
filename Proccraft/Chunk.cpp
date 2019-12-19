@@ -2,7 +2,7 @@
 #include <iostream>
 
 Chunk::Chunk()
-	: VAO(0), VBO(0), IBO(0), indexCount(0)
+	: VAO(0), VBO(0), IBO(0), indexCount(0), edgeVertices(4)
 {
 
 }
@@ -12,12 +12,20 @@ Chunk::~Chunk()
 	clearChunk();
 }
 
+std::vector<GLfloat> Chunk::getEdgeVertices()
+{
+	return edgeVertices;
+}
+
 void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList)
 {
 	int counter = 0;
-	const int size = 128;
+	const int size = 64;
 	float amplitude = 40.0f;
 	float scale = 0;
+
+	//PX-NX-PZ-NZ
+	GLfloat edges[4] = { 0 };
 
 	const int n = size * size * 144;
 	const int m = size * size * 36;
@@ -25,18 +33,18 @@ void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList)
 	GLfloat* chunkVertices = new GLfloat[n];
 	unsigned int* chunkIndices = new unsigned int[m];
 
-	for (int x = 0 + xPos; x < size + xPos; x++)
+	for (int x = xPos; x < size + xPos; x++)
 	{
-		for (int z = 0 + zPos; z < size + zPos; z++)
+		for (int z = zPos; z < size + zPos; z++)
 		{
 			//Layered noise functions to determine height
 			float y = floor(amplitude * (glm::simplex(glm::vec2(x / 128.0f, z / 128.0f))));
-			y += floor(amplitude/10.0f * (glm::simplex(glm::vec2(x / 16.0f, z / 16.0f))));
+			y += floor(amplitude / 10.0f * (glm::simplex(glm::vec2(x / 16.0f, z / 16.0f))));
 
-			scale = amplitude/5.0f;
+			scale = amplitude / 5.0f;
 			if (scale < 1.0f) scale = 1.0f;
 
-			GLfloat vertices[] = {
+			GLfloat vert[] = {
 				//0
 				x - 0.5f, (y - 0.5f * scale), z - 0.5f,		0.0f, 0.0f, 1.0f,
 				x - 0.5f, (y - 0.5f * scale), z - 0.5f,		-1.0f, 0.0f, 0.0f,
@@ -78,7 +86,7 @@ void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList)
 				x - 0.5f, (y + 0.5f * scale), z + 0.5f,		0.0f, 1.0f, 0.0f,
 			};
 
-			unsigned int indices[] = {
+			unsigned int ind[] = {
 				0, 3, 6,	//Front
 				6, 9, 0,
 				12, 1, 10,	//Left
@@ -93,13 +101,18 @@ void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList)
 				5, 2, 14
 			};
 
+			//Store edge vertices
+			if (vert[0] < edges[1]) edges[1] = vert[0];
+			if (vert[1] < edges[3]) edges[3] = vert[2];
+			if (vert[18] > edges[0]) edges[0] = vert[18];
+			if (vert[74] > edges[2]) edges[2] = vert[74];
 
 
 			for (int i = 0; i < 144; i++)
-				chunkVertices[i + 144 * counter] = vertices[i];
+				chunkVertices[i + 144 * counter] = vert[i];
 
 			for (int i = 0; i < 36; i++)
-				chunkIndices[i + 36*counter] = indices[i] + 24*counter;
+				chunkIndices[i + 36*counter] = ind[i] + 24*counter;
 
 			counter++;
 		}
@@ -107,6 +120,7 @@ void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList)
 
 	Chunk* chunk = new Chunk();
 	chunk->createChunk(chunkVertices, chunkIndices, n, m);
+	std::copy(edges, edges + 4, chunk->edgeVertices.begin());
 	chunkList.push_back(chunk);
 }
 
