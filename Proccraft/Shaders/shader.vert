@@ -13,9 +13,11 @@ uniform mat4 view;
 
 void main()									
 {												
-	gl_Position = projection * view * model * vec4(pos, 1.0);		
+	gl_Position = projection * view * model * vec4(pos, 1.0f);		
 	//vColor = vec4(clamp(pos, 0.0f, 1.0f), 1.0f);
-	vColor = vec4(0.4f, 1.0f, 0.2f, 1.0f);
+	
+	if(pos.y < 0.0f) vColor = vec4(0.94f, 0.87f, 0.44f, 1.0f);
+	else vColor = vec4(0.4f, 1.0f, 0.2f, 1.0f);
 	
 	Normal = mat3(transpose(inverse(model))) * norm;
 	

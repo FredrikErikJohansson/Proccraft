@@ -14,7 +14,6 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Light.h"
-#include "World.h"
 #include "Material.h"
 
 #include <glm/gtc/noise.hpp>
@@ -25,7 +24,7 @@ Window mainWindow;
 std::vector<Chunk*> chunkList;
 std::vector<Shader*> shaderList;
 Camera camera;
-World world;
+Chunk chunk;
 
 Material shinyMaterial;
 Material dullMaterial;
@@ -68,7 +67,7 @@ int main()
 	{
 		while (dummy < wSize)
 		{
-			world.generateWorld(dummy, bigDummy, chunkList);
+			chunk.generateChunk(dummy, bigDummy, chunkList);
 			dummy += cSize;
 			counter++;
 		}

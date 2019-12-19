@@ -45,6 +45,6 @@ void main()
 			specularColor = vec4(directionalLight.color * material.specularIntensity * specularFactor, 1.0f);
 		}
 	}
-	
+
 	color = vColor * ( ambientColor + diffuseColor + specularColor);	
 }												

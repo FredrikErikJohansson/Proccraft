@@ -4,9 +4,8 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/noise.hpp>
-#include <string>
 
-#include "Block.h"
+#include <vector>
 
 class Chunk
 {
