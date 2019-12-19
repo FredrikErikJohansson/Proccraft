@@ -120,6 +120,8 @@ void Chunk::generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList)
 
 	Chunk* chunk = new Chunk();
 	chunk->createChunk(chunkVertices, chunkIndices, n, m);
+	delete[] chunkVertices;
+	delete[] chunkIndices;
 	std::copy(edges, edges + 4, chunk->edgeVertices.begin());
 	chunkList.push_back(chunk);
 }

@@ -153,13 +153,15 @@ int main()
 			//Sort by PX ascending
 			std::sort(chunkList.begin(), chunkList.end(), [](const Chunk* lhs, const Chunk* rhs)
 			{
-				//PX - NX - PZ - NZ
 				return lhs->edgeVertices[2] < rhs->edgeVertices[2];
 			});
 
+			for (int i = 0; i < side; i++)
+				delete chunkList[i];
+
 			if(chunkList.size() == counter)
 				chunkList.erase(chunkList.begin(), chunkList.begin() + side);
-				
+		
 			for (int i = 0; i < side; i++)
 				chunk.generateChunk(dummy + cSize * i, bigDummy, chunkList);
 
