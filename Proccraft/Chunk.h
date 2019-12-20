@@ -6,6 +6,7 @@
 #include <glm/gtc/noise.hpp>
 
 #include <vector>
+#include <algorithm>
 
 class Chunk
 {

@@ -62,32 +62,35 @@ int main()
 	int stupidTimerNX = 0;
 	int stupidTimerNZ = 0;
 
-	const int wSize = 256;
-	const int cSize = 64;
+	const int wSize = 64;
+	const int cSize = 16;
 	const int side = (wSize / cSize);
 
-	int PX = 0;
-	int PZ = 0;
+	int PX = -wSize;
+	int PZ = -wSize;
 	int NX = 0;
 	int NZ = 0;
+	int PY = -wSize;
+	int NY = 0;
 
 	int counter = 0;
 	bool inside = true;
 
-	/*while (PX < wSize)
+	while (PX < wSize)
 	{
-		while (PZ < wSize)
+		while (PY < wSize)
 		{
-			chunk.generateChunk(PX, 0.0f, PZ, chunkList);
-			PZ += cSize;
-			counter++;
+			while (PZ < wSize)
+			{
+				chunk.generateChunk(PX, PY, PZ, chunkList);
+				PZ += cSize;
+			}
+			PY += cSize;
+			PZ = -wSize;
 		}
 		PX += cSize;
-		PZ = NZ;
-	}*/
-
-	chunk.generateChunk(0.0f, 0.0f, 0.0f, chunkList);
-	chunk.generateChunk((float)cSize, 0.0f, 0.0f, chunkList);
+		PY = -wSize;
+	}
 		
 
 	//CreateObjects();

@@ -20,7 +20,7 @@ std::vector<GLfloat> Chunk::getEdgeVertices()
 void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chunkList)
 {
 	int counter = 0;
-	const int size = 64;
+	const int size = 16;
 	float amplitude = 40.0f;
 
 	//Make it two voxels larger than the chunk in each axis
@@ -38,8 +38,10 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 		{
 			for (int z = zPos; z < size + zPos + 2; z++)
 			{
-				if (floor(amplitude * (glm::simplex(glm::vec3(x / 128.0f, y / 128.0f, z / 128.0f)))) > 0.0f)
+				if (floor(amplitude * (glm::simplex(glm::vec3(x / 64.0f, y / 64.0f, z / 64.0f)))) > 0.0f)
+				{
 					blockMap[x - xPos][y - yPos][z - zPos] = true;
+				}				
 			}
 		}
 	}
@@ -57,46 +59,47 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 				if (!blockMap[posX][posY][posZ])
 					continue;
 
+				//TODO: Calculate normal with cross product
 				GLfloat vertNX[] = {
-					x - 0.5f, (y + 0.5f), z - 0.5f,		-1.0f, 0.0f, 0.0f,
-					x - 0.5f, (y - 0.5f), z - 0.5f,		-1.0f, 0.0f, 0.0f,
-					x - 0.5f, (y - 0.5f), z + 0.5f,		-1.0f, 0.0f, 0.0f,
-					x - 0.5f, (y + 0.5f), z + 0.5f,		-1.0f, 0.0f, 0.0f,					
+					x - 0.5f, y + 0.5f, z - 0.5f,		-1.0f, 0.0f, 0.0f,
+					x - 0.5f, y - 0.5f, z - 0.5f,		-1.0f, 0.0f, 0.0f,
+					x - 0.5f, y - 0.5f, z + 0.5f,		-1.0f, 0.0f, 0.0f,
+					x - 0.5f, y + 0.5f, z + 0.5f,		-1.0f, 0.0f, 0.0f,					
 				};
 
 				GLfloat vertPX[] = {
-					x + 0.5f, (y - 0.5f), z + 0.5f,		1.0f, 0.0f, 0.0f,
-					x + 0.5f, (y - 0.5f), z - 0.5f,		1.0f, 0.0f, 0.0f,
-					x + 0.5f, (y + 0.5f), z - 0.5f,		1.0f, 0.0f, 0.0f,
-					x + 0.5f, (y + 0.5f), z + 0.5f,		1.0f, 0.0f, 0.0f,			
+					x + 0.5f, y - 0.5f, z + 0.5f,		1.0f, 0.0f, 0.0f,
+					x + 0.5f, y - 0.5f, z - 0.5f,		1.0f, 0.0f, 0.0f,
+					x + 0.5f, y + 0.5f, z - 0.5f,		1.0f, 0.0f, 0.0f,
+					x + 0.5f, y + 0.5f, z + 0.5f,		1.0f, 0.0f, 0.0f,			
 				};
 
 				GLfloat vertNY[] = {
-					x + 0.5f, (y - 0.5f), z - 0.5f,		0.0f, -1.0f, 0.0f,
-					x + 0.5f, (y - 0.5f), z + 0.5f,		0.0f, -1.0f, 0.0f,
-					x - 0.5f, (y - 0.5f), z + 0.5f,		0.0f, -1.0f, 0.0f,
-					x - 0.5f, (y - 0.5f), z - 0.5f,		0.0f, -1.0f, 0.0f,							
+					x + 0.5f, y - 0.5f, z - 0.5f,		0.0f, -1.0f, 0.0f,
+					x + 0.5f, y - 0.5f, z + 0.5f,		0.0f, -1.0f, 0.0f,
+					x - 0.5f, y - 0.5f, z + 0.5f,		0.0f, -1.0f, 0.0f,
+					x - 0.5f, y - 0.5f, z - 0.5f,		0.0f, -1.0f, 0.0f,							
 				};
 
 				GLfloat vertPY[] = {
-					x - 0.5f, (y + 0.5f), z + 0.5f,		0.0f, 1.0f, 0.0f,
-					x + 0.5f, (y + 0.5f), z + 0.5f,		0.0f, 1.0f, 0.0f,
-					x + 0.5f, (y + 0.5f), z - 0.5f,		0.0f, 1.0f, 0.0f,
-					x - 0.5f, (y + 0.5f), z - 0.5f,		0.0f, 1.0f, 0.0f,				
+					x - 0.5f, y + 0.5f, z + 0.5f,		0.0f, 1.0f, 0.0f,
+					x + 0.5f, y + 0.5f, z + 0.5f,		0.0f, 1.0f, 0.0f,
+					x + 0.5f, y + 0.5f, z - 0.5f,		0.0f, 1.0f, 0.0f,
+					x - 0.5f, y + 0.5f, z - 0.5f,		0.0f, 1.0f, 0.0f,				
 				};
 
 				GLfloat vertNZ[] = {
-					x - 0.5f, (y + 0.5f), z - 0.5f,		0.0f, 0.0f, -1.0f,
-					x + 0.5f, (y + 0.5f), z - 0.5f,		0.0f, 0.0f, -1.0f,
-					x + 0.5f, (y - 0.5f), z - 0.5f,		0.0f, 0.0f, -1.0f,
-					x - 0.5f, (y - 0.5f), z - 0.5f,		0.0f, 0.0f, -1.0f,	
+					x - 0.5f, y + 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,
+					x + 0.5f, y + 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,
+					x + 0.5f, y - 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,
+					x - 0.5f, y - 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,	
 				};
 
 				GLfloat vertPZ[] = {
-					x + 0.5f, (y - 0.5f), z + 0.5f,		0.0f, 0.0f, 1.0f,
-					x + 0.5f, (y + 0.5f), z + 0.5f,		0.0f, 0.0f, 1.0f,
-					x - 0.5f, (y + 0.5f), z + 0.5f,		0.0f, 0.0f, 1.0f,
-					x - 0.5f, (y - 0.5f), z + 0.5f,		0.0f, 0.0f, 1.0f,				
+					x + 0.5f, y - 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,
+					x + 0.5f, y + 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,
+					x - 0.5f, y + 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,
+					x - 0.5f, y - 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,				
 				};
 
 				unsigned int ind[] = {
@@ -170,80 +173,6 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 
 					counter++;
 				}
-
-				
-
-				/*GLfloat vert[] = {
-					//0
-					x - 0.5f, (y - 0.5f * scale), z - 0.5f,		0.0f, 0.0f, 1.0f,
-					x - 0.5f, (y - 0.5f * scale), z - 0.5f,		-1.0f, 0.0f, 0.0f,
-					x - 0.5f, (y - 0.5f * scale), z - 0.5f,		0.0f, -1.0f, 0.0f,
-
-					//3
-					x + 0.5f, (y - 0.5f * scale), z - 0.5f,		0.0f, 0.0f, 1.0f,
-					x + 0.5f, (y - 0.5f * scale), z - 0.5f,		1.0f, 0.0f, 0.0f,
-					x + 0.5f, (y - 0.5f * scale), z - 0.5f,		0.0f, -1.0f, 0.0f,
-
-					//6
-					x + 0.5f, (y + 0.5f * scale), z - 0.5f,		0.0f, 0.0f, 1.0f,
-					x + 0.5f, (y + 0.5f * scale), z - 0.5f,		1.0f, 0.0f, 0.0f,
-					x + 0.5f, (y + 0.5f * scale), z - 0.5f,		0.0f, 1.0f, 0.0f,
-
-					//9
-					x - 0.5f, (y + 0.5f * scale), z - 0.5f,		0.0f, 0.0f, 1.0f,
-					x - 0.5f, (y + 0.5f * scale), z - 0.5f,		-1.0f, 0.0f, 0.0f,
-					x - 0.5f, (y + 0.5f * scale), z - 0.5f,		0.0f, 1.0f, 0.0f,
-
-					//12
-					x - 0.5f, (y - 0.5f * scale), z + 0.5f,		-1.0f, 0.0f, 0.0f,
-					x - 0.5f, (y - 0.5f * scale), z + 0.5f,		0.0f, 0.0f, -1.0f,
-					x - 0.5f, (y - 0.5f * scale), z + 0.5f,		0.0f, -1.0f, 0.0f,
-
-					//15
-					x + 0.5f, (y - 0.5f * scale), z + 0.5f,		0.0f, 0.0f, -1.0f,
-					x + 0.5f, (y - 0.5f * scale), z + 0.5f,		1.0f, 0.0f, 0.0f,
-					x + 0.5f, (y - 0.5f * scale), z + 0.5f,		0.0f, -1.0f, 0.0f,
-
-					//18
-					x + 0.5f, (y + 0.5f * scale), z + 0.5f,		0.0f, 0.0f, -1.0f,
-					x + 0.5f, (y + 0.5f * scale), z + 0.5f,		1.0f, 0.0f, 0.0f,
-					x + 0.5f, (y + 0.5f * scale), z + 0.5f,		0.0f, 1.0f, 0.0f,
-
-					//21
-					x - 0.5f, (y + 0.5f * scale), z + 0.5f,		-1.0f, 0.0f, 0.0f,
-					x - 0.5f, (y + 0.5f * scale), z + 0.5f,		0.0f, 0.0f, -1.0f,
-					x - 0.5f, (y + 0.5f * scale), z + 0.5f,		0.0f, 1.0f, 0.0f,
-				};
-
-				unsigned int ind[] = {
-					0, 3, 6,	//Front
-					6, 9, 0,
-					12, 1, 10,	//Left
-					10, 21, 12,
-					15, 13, 22,	//Back
-					22, 18, 15,
-					4, 16, 19,	//Right
-					19, 7, 4,
-					11, 8, 20,	//Up
-					20, 23, 11,
-					14, 17, 5,	//Down
-					5, 2, 14
-				};
-
-				//Store edge vertices
-				if (vert[0] < edges[1]) edges[1] = vert[0];
-				if (vert[2] < edges[3]) edges[3] = vert[2];
-				if (vert[18] > edges[0]) edges[0] = vert[18];
-				if (vert[74] > edges[2]) edges[2] = vert[74];
-
-
-				for (int i = 0; i < 144; i++)
-					chunkVertices[i + 144 * counter] = vert[i];
-
-				for (int i = 0; i < 36; i++)
-					chunkIndices[i + 36 * counter] = ind[i] + 24 * counter;
-
-				counter++; */
 			}
 		}
 	}
