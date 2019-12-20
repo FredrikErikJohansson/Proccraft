@@ -15,7 +15,7 @@ public:
 
 	std::vector<GLfloat> getEdgeVertices();
 
-	void generateChunk(int xPos, int zPos, std::vector<Chunk*>& chunkList);
+	void generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chunkList);
 	void createChunk(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices);
 	void renderChunk();
 	void clearChunk();

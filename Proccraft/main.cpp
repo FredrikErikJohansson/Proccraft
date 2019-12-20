@@ -57,34 +57,43 @@ int main()
 	mainWindow = Window(960, 540);
 	mainWindow.Initialize();
 
-	int stupidTimer = 0;
+	int stupidTimerX = 0;
+	int stupidTimerZ = 0;
+	int stupidTimerNX = 0;
+	int stupidTimerNZ = 0;
 
 	const int wSize = 256;
 	const int cSize = 64;
-	const int side = (wSize / cSize) * 2;
+	const int side = (wSize / cSize);
 
-	int dummy = -wSize;
-	int bigDummy = -wSize;
+	int PX = 0;
+	int PZ = 0;
+	int NX = 0;
+	int NZ = 0;
+
 	int counter = 0;
 	bool inside = true;
 
-	while (bigDummy < wSize)
+	/*while (PX < wSize)
 	{
-		while (dummy < wSize)
+		while (PZ < wSize)
 		{
-			chunk.generateChunk(dummy, bigDummy, chunkList);
-			dummy += cSize;
+			chunk.generateChunk(PX, 0.0f, PZ, chunkList);
+			PZ += cSize;
 			counter++;
 		}
-		bigDummy += cSize;
-		dummy = -wSize;
-	}
+		PX += cSize;
+		PZ = NZ;
+	}*/
+
+	chunk.generateChunk(0.0f, 0.0f, 0.0f, chunkList);
+	chunk.generateChunk((float)cSize, 0.0f, 0.0f, chunkList);
 		
 
 	//CreateObjects();
 	CreateShaders();
 
-	camera = Camera(glm::vec3(10.0f, 200.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 50.0f, 0.2f);
+	camera = Camera(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 50.0f, 0.2f);
 
 	//shinyMaterial = Material(1.0f, 32.0f);
 	dullMaterial = Material(0.3f, 4.0f);
@@ -143,14 +152,19 @@ int main()
 		for(size_t i = 0; i < chunkList.size(); i++)
 			chunkList[i]->renderChunk();
 
-		if ((int)floor(camera.getCameraPosition().z) % cSize == 0) stupidTimer++;
-		else stupidTimer = 0;
+		if ((int)floor(camera.getCameraPosition().z) % cSize == 0) stupidTimerZ++;
+		else if ((int)floor(camera.getCameraPosition().x) % cSize == 0) stupidTimerX++;
+		else
+		{
+			stupidTimerX = 0;
+			stupidTimerZ = 0;
+		}
 
 
 		//TODO: Add flag to only run this once
-		if (stupidTimer == 1 && (int)floor(camera.getCameraPosition().z) % cSize == 0)
+		/*if (stupidTimerZ == 1 && (int)floor(camera.getCameraPosition().z) % cSize/2 == 0)
 		{
-			//Sort by PX ascending
+			//Sort by PZ ascending
 			std::sort(chunkList.begin(), chunkList.end(), [](const Chunk* lhs, const Chunk* rhs)
 			{
 				return lhs->edgeVertices[2] < rhs->edgeVertices[2];
@@ -163,10 +177,32 @@ int main()
 				chunkList.erase(chunkList.begin(), chunkList.begin() + side);
 		
 			for (int i = 0; i < side; i++)
-				chunk.generateChunk(dummy + cSize * i, bigDummy, chunkList);
+				chunk.generateChunk(PX - cSize * i, PZ, chunkList);
 
-			bigDummy += cSize;
-		}	
+			PZ += cSize;
+			NZ += cSize;
+		}
+
+		if (stupidTimerX == 1 && (int)floor(camera.getCameraPosition().x) % cSize/2 == 0)
+		{
+			//Sort by PX ascending
+			std::sort(chunkList.begin(), chunkList.end(), [](const Chunk* lhs, const Chunk* rhs)
+			{
+				return lhs->edgeVertices[0] < rhs->edgeVertices[0];
+			});
+
+			for (int i = 0; i < side; i++)
+				delete chunkList[i];
+
+			if (chunkList.size() == counter)
+				chunkList.erase(chunkList.begin(), chunkList.begin() + side);
+
+			for (int i = 0; i < side; i++)
+				chunk.generateChunk(PX, NZ + cSize * i, chunkList);
+
+			PX += cSize;
+			NX += cSize;
+		}*/
 
 		glUseProgram(0);
 
