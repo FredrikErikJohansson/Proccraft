@@ -24,6 +24,7 @@ const float toRadians = 3.14159265f / 180.0f;
 Window mainWindow;
 std::vector<Chunk*> chunkList;
 std::vector<Shader*> shaderList;
+std::vector<Chunk*> renderQueue;
 Camera camera;
 Chunk chunk;
 
@@ -61,8 +62,10 @@ int main()
 	int stupidTimerZ = 0;
 	int stupidTimerNX = 0;
 	int stupidTimerNZ = 0;
+	int nbFrames = 0;
+	double lT = glfwGetTime();
 
-	const int wSize = 64;
+	const int wSize = 32;
 	const int cSize = 16;
 	const int side = (wSize / cSize);
 
@@ -116,6 +119,23 @@ int main()
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
+		// Measure speed
+		nbFrames++;
+
+		if (currentTime - lT >= 0.1 && renderQueue.size() > 0)
+		{
+			chunkList.push_back(*renderQueue.begin());
+			renderQueue.erase(renderQueue.begin());
+		}
+
+		if (currentTime - lT >= 1.0) { // If last prinf() was more than 1 sec ago
+			// printf and reset timer
+			printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+			nbFrames = 0;
+			lT += 1.0;	
+		}
+
+
 		//Handle input events
 		glfwPollEvents();
 		camera.keyControl(mainWindow.getKeys(), deltaTime);
@@ -165,47 +185,14 @@ int main()
 
 
 		//TODO: Add flag to only run this once
-		/*if (stupidTimerZ == 1 && (int)floor(camera.getCameraPosition().z) % cSize/2 == 0)
+		if (stupidTimerZ == 1 && (int)floor(camera.getCameraPosition().z) % cSize/2 == 0)
 		{
-			//Sort by PZ ascending
-			std::sort(chunkList.begin(), chunkList.end(), [](const Chunk* lhs, const Chunk* rhs)
-			{
-				return lhs->edgeVertices[2] < rhs->edgeVertices[2];
-			});
-
 			for (int i = 0; i < side; i++)
-				delete chunkList[i];
-
-			if(chunkList.size() == counter)
-				chunkList.erase(chunkList.begin(), chunkList.begin() + side);
-		
-			for (int i = 0; i < side; i++)
-				chunk.generateChunk(PX - cSize * i, PZ, chunkList);
+				chunk.generateChunk(PX - cSize * i, PY, PZ, renderQueue);
 
 			PZ += cSize;
 			NZ += cSize;
 		}
-
-		if (stupidTimerX == 1 && (int)floor(camera.getCameraPosition().x) % cSize/2 == 0)
-		{
-			//Sort by PX ascending
-			std::sort(chunkList.begin(), chunkList.end(), [](const Chunk* lhs, const Chunk* rhs)
-			{
-				return lhs->edgeVertices[0] < rhs->edgeVertices[0];
-			});
-
-			for (int i = 0; i < side; i++)
-				delete chunkList[i];
-
-			if (chunkList.size() == counter)
-				chunkList.erase(chunkList.begin(), chunkList.begin() + side);
-
-			for (int i = 0; i < side; i++)
-				chunk.generateChunk(PX, NZ + cSize * i, chunkList);
-
-			PX += cSize;
-			NX += cSize;
-		}*/
 
 		glUseProgram(0);
 

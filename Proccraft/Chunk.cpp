@@ -21,7 +21,7 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 {
 	int counter = 0;
 	const int size = 16;
-	float amplitude = 40.0f;
+	float amplitude = 10.0f;
 
 	//Make it two voxels larger than the chunk in each axis
 	std::vector<std::vector<std::vector<bool>>> blockMap(size + 2, std::vector<std::vector<bool>>(size + 2, std::vector<bool>(size + 2, false)));
@@ -38,141 +38,144 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 		{
 			for (int z = zPos; z < size + zPos + 2; z++)
 			{
-				if (floor(amplitude * (glm::simplex(glm::vec3(x / 64.0f, y / 64.0f, z / 64.0f)))) > 0.0f)
+
+				int posX = x - xPos;
+				int posY = y - yPos;
+				int posZ = z - zPos;
+
+				int h = floor(amplitude * (glm::simplex(glm::vec3(x / 64.0f, y / 64.0f, z / 64.0f))));
+				//h += floor(amplitude/2 * (glm::simplex(glm::vec3(x / 64.0f, y / 64.0f, z / 64.0f))));
+				if (h > 0)
 				{
-					blockMap[x - xPos][y - yPos][z - zPos] = true;
-				}				
-			}
-		}
-	}
+					blockMap[posX][posY][posZ] = true;
+				}	
 
-	for (int x = xPos; x < size + xPos; x++)
-	{
-		for (int y = yPos; y < size + yPos; y++)
-		{
-			for (int z = zPos; z < size + zPos; z++)
-			{
-				int posX = x - xPos + 1;
-				int posY = y - yPos + 1;
-				int posZ = z - zPos + 1;
-
-				if (!blockMap[posX][posY][posZ])
-					continue;
-
-				//TODO: Calculate normal with cross product
-				GLfloat vertNX[] = {
-					x - 0.5f, y + 0.5f, z - 0.5f,		-1.0f, 0.0f, 0.0f,
-					x - 0.5f, y - 0.5f, z - 0.5f,		-1.0f, 0.0f, 0.0f,
-					x - 0.5f, y - 0.5f, z + 0.5f,		-1.0f, 0.0f, 0.0f,
-					x - 0.5f, y + 0.5f, z + 0.5f,		-1.0f, 0.0f, 0.0f,					
-				};
-
-				GLfloat vertPX[] = {
-					x + 0.5f, y - 0.5f, z + 0.5f,		1.0f, 0.0f, 0.0f,
-					x + 0.5f, y - 0.5f, z - 0.5f,		1.0f, 0.0f, 0.0f,
-					x + 0.5f, y + 0.5f, z - 0.5f,		1.0f, 0.0f, 0.0f,
-					x + 0.5f, y + 0.5f, z + 0.5f,		1.0f, 0.0f, 0.0f,			
-				};
-
-				GLfloat vertNY[] = {
-					x + 0.5f, y - 0.5f, z - 0.5f,		0.0f, -1.0f, 0.0f,
-					x + 0.5f, y - 0.5f, z + 0.5f,		0.0f, -1.0f, 0.0f,
-					x - 0.5f, y - 0.5f, z + 0.5f,		0.0f, -1.0f, 0.0f,
-					x - 0.5f, y - 0.5f, z - 0.5f,		0.0f, -1.0f, 0.0f,							
-				};
-
-				GLfloat vertPY[] = {
-					x - 0.5f, y + 0.5f, z + 0.5f,		0.0f, 1.0f, 0.0f,
-					x + 0.5f, y + 0.5f, z + 0.5f,		0.0f, 1.0f, 0.0f,
-					x + 0.5f, y + 0.5f, z - 0.5f,		0.0f, 1.0f, 0.0f,
-					x - 0.5f, y + 0.5f, z - 0.5f,		0.0f, 1.0f, 0.0f,				
-				};
-
-				GLfloat vertNZ[] = {
-					x - 0.5f, y + 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,
-					x + 0.5f, y + 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,
-					x + 0.5f, y - 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,
-					x - 0.5f, y - 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,	
-				};
-
-				GLfloat vertPZ[] = {
-					x + 0.5f, y - 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,
-					x + 0.5f, y + 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,
-					x - 0.5f, y + 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,
-					x - 0.5f, y - 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,				
-				};
-
-				unsigned int ind[] = {
-					0, 1, 2,
-					2, 3, 0
-				};
-
-				//Check all surrounding blocks
-				if (!blockMap[posX - 1][posY][posZ])
+				//Skip first one
+				if (posX > 1 && posY > 1 && posZ > 1)
 				{
-					for (int i = 0; i < 24; i++)
-						chunkVertices[i + 24 * counter] = vertNX[i];
+					//Current block
+					posX--;
+					posY--;
+					posZ--;
 
-					for (int i = 0; i < 6; i++)
-						chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
+					if (!blockMap[posX][posY][posZ])
+						continue;
 
-					counter++;			
-				}
+					//TODO: Calculate normal with cross product
+					GLfloat vertNX[] = {
+						x - 0.5f, y + 0.5f, z - 0.5f,		-1.0f, 0.0f, 0.0f,
+						x - 0.5f, y - 0.5f, z - 0.5f,		-1.0f, 0.0f, 0.0f,
+						x - 0.5f, y - 0.5f, z + 0.5f,		-1.0f, 0.0f, 0.0f,
+						x - 0.5f, y + 0.5f, z + 0.5f,		-1.0f, 0.0f, 0.0f,
+					};
 
-				if (!blockMap[posX + 1][posY][posZ])
-				{
-					for (int i = 0; i < 24; i++)
-						chunkVertices[i + 24 * counter] = vertPX[i];
+					GLfloat vertPX[] = {
+						x + 0.5f, y - 0.5f, z + 0.5f,		1.0f, 0.0f, 0.0f,
+						x + 0.5f, y - 0.5f, z - 0.5f,		1.0f, 0.0f, 0.0f,
+						x + 0.5f, y + 0.5f, z - 0.5f,		1.0f, 0.0f, 0.0f,
+						x + 0.5f, y + 0.5f, z + 0.5f,		1.0f, 0.0f, 0.0f,
+					};
 
-					for (int i = 0; i < 6; i++)
-						chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
+					GLfloat vertNY[] = {
+						x + 0.5f, y - 0.5f, z - 0.5f,		0.0f, -1.0f, 0.0f,
+						x + 0.5f, y - 0.5f, z + 0.5f,		0.0f, -1.0f, 0.0f,
+						x - 0.5f, y - 0.5f, z + 0.5f,		0.0f, -1.0f, 0.0f,
+						x - 0.5f, y - 0.5f, z - 0.5f,		0.0f, -1.0f, 0.0f,
+					};
 
-					counter++;
-				}
+					GLfloat vertPY[] = {
+						x - 0.5f, y + 0.5f, z + 0.5f,		0.0f, 1.0f, 0.0f,
+						x + 0.5f, y + 0.5f, z + 0.5f,		0.0f, 1.0f, 0.0f,
+						x + 0.5f, y + 0.5f, z - 0.5f,		0.0f, 1.0f, 0.0f,
+						x - 0.5f, y + 0.5f, z - 0.5f,		0.0f, 1.0f, 0.0f,
+					};
 
-				if (!blockMap[posX][posY - 1][posZ])
-				{
-					for (int i = 0; i < 24; i++)
-						chunkVertices[i + 24 * counter] = vertNY[i];
+					GLfloat vertNZ[] = {
+						x - 0.5f, y + 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,
+						x + 0.5f, y + 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,
+						x + 0.5f, y - 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,
+						x - 0.5f, y - 0.5f, z - 0.5f,		0.0f, 0.0f, -1.0f,
+					};
 
-					for (int i = 0; i < 6; i++)
-						chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
+					GLfloat vertPZ[] = {
+						x + 0.5f, y - 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,
+						x + 0.5f, y + 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,
+						x - 0.5f, y + 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,
+						x - 0.5f, y - 0.5f, z + 0.5f,		0.0f, 0.0f, 1.0f,
+					};
 
-					counter++;
-				}
+					unsigned int ind[] = {
+						0, 1, 2,
+						2, 3, 0
+					};
 
-				if (!blockMap[posX][posY + 1][posZ])
-				{
-					for (int i = 0; i < 24; i++)
-						chunkVertices[i + 24 * counter] = vertPY[i];
+					//Check all surrounding blocks
+					if (!blockMap[posX - 1][posY][posZ])
+					{
+						for (int i = 0; i < 24; i++)
+							chunkVertices[i + 24 * counter] = vertNX[i];
 
-					for (int i = 0; i < 6; i++)
-						chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
+						for (int i = 0; i < 6; i++)
+							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
 
-					counter++;
-				}
+						counter++;
+					}
 
-				if (!blockMap[posX][posY][posZ - 1])
-				{
-					for (int i = 0; i < 24; i++)
-						chunkVertices[i + 24 * counter] = vertNZ[i];
+					if (!blockMap[posX + 1][posY][posZ])
+					{
+						for (int i = 0; i < 24; i++)
+							chunkVertices[i + 24 * counter] = vertPX[i];
 
-					for (int i = 0; i < 6; i++)
-						chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
+						for (int i = 0; i < 6; i++)
+							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
 
-					counter++;
-				}
+						counter++;
+					}
 
-				if (!blockMap[posX][posY][posZ + 1])
-				{
-					for (int i = 0; i < 24; i++)
-						chunkVertices[i + 24 * counter] = vertPZ[i];
+					if (!blockMap[posX][posY - 1][posZ])
+					{
+						for (int i = 0; i < 24; i++)
+							chunkVertices[i + 24 * counter] = vertNY[i];
 
-					for (int i = 0; i < 6; i++)
-						chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
+						for (int i = 0; i < 6; i++)
+							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
 
-					counter++;
-				}
+						counter++;
+					}
+
+					if (!blockMap[posX][posY + 1][posZ])
+					{
+						for (int i = 0; i < 24; i++)
+							chunkVertices[i + 24 * counter] = vertPY[i];
+
+						for (int i = 0; i < 6; i++)
+							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
+
+						counter++;
+					}
+
+					if (!blockMap[posX][posY][posZ - 1])
+					{
+						for (int i = 0; i < 24; i++)
+							chunkVertices[i + 24 * counter] = vertNZ[i];
+
+						for (int i = 0; i < 6; i++)
+							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
+
+						counter++;
+					}
+
+					if (!blockMap[posX][posY][posZ + 1])
+					{
+						for (int i = 0; i < 24; i++)
+							chunkVertices[i + 24 * counter] = vertPZ[i];
+
+						for (int i = 0; i < 6; i++)
+							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
+
+						counter++;
+					}
+				}	
 			}
 		}
 	}
