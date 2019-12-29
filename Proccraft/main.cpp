@@ -58,10 +58,6 @@ int main()
 	mainWindow = Window(960, 540);
 	mainWindow.Initialize();
 
-	int stupidTimerX = 0;
-	int stupidTimerZ = 0;
-	int stupidTimerNX = 0;
-	int stupidTimerNZ = 0;
 	int nbFrames = 0;
 	double lT = glfwGetTime();
 
@@ -70,36 +66,26 @@ int main()
 	const int side = (wSize / cSize);
 
 	int PX = -wSize;
-	int PZ = -wSize;
-	int NX = 0;
-	int NZ = 0;
 	int PY = -wSize;
-	int NY = 0;
+	int PZ = -wSize;
 
+	int NX = -side;
+	int NY = -side;
+	int NZ = -side;
+
+	int currentX = 0;
+	int currentY = 0;
+	int currentZ = 0;
+	
 	int counter = 0;
 	bool inside = true;
 
-	while (PX < wSize)
-	{
-		while (PY < wSize)
-		{
-			while (PZ < wSize)
-			{
-				chunk.generateChunk(PX, PY, PZ, chunkList);
-				PZ += cSize;
-			}
-			PY += cSize;
-			PZ = -wSize;
-		}
-		PX += cSize;
-		PY = -wSize;
-	}
+	std::vector<std::vector<std::vector<bool>>> worldMap(64, std::vector<std::vector<bool>>(64, std::vector<bool>(64, false)));
 		
-
 	//CreateObjects();
 	CreateShaders();
 
-	camera = Camera(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 50.0f, 0.2f);
+	camera = Camera(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.2f);
 
 	//shinyMaterial = Material(1.0f, 32.0f);
 	dullMaterial = Material(0.3f, 4.0f);
@@ -164,35 +150,39 @@ int main()
 		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
 		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -10.0f, -0.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		//model = glm::rotate(model, increment * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		//model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
-		//printf("Camera: %f , %f, %f \n", camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
+		currentX = (int)floor(camera.getCameraPosition().x);
+		currentY = (int)floor(camera.getCameraPosition().y);
+		currentZ = (int)floor(camera.getCameraPosition().z);
 
-		for(size_t i = 0; i < chunkList.size(); i++)
+		int coordX = (int)floor(currentX / 16);
+		int coordY = (int)floor(currentY / 16);
+		int coordZ = (int)floor(currentZ / 16);
+
+		for (int x = coordX - 4; x < coordX + 4; x++)
+		{
+			for (int y = coordY - 4; y < coordY + 4; y++)
+			{
+				for (int z = coordZ - 4; z < coordZ + 4; z++)
+				{
+					if (x >= -32 && y >= -32 && z >= -32)
+					{
+						if (!worldMap[x + 32][y + 32][z + 32])
+							chunk.generateChunk(x * cSize, y * cSize, z * cSize, renderQueue);
+
+						worldMap[x + 32][y + 32][z + 32] = true;
+					}			
+				}
+			}
+		}
+
+		for (size_t i = 0; i < chunkList.size(); i++)
 			chunkList[i]->renderChunk();
-
-		if ((int)floor(camera.getCameraPosition().z) % cSize == 0) stupidTimerZ++;
-		else if ((int)floor(camera.getCameraPosition().x) % cSize == 0) stupidTimerX++;
-		else
-		{
-			stupidTimerX = 0;
-			stupidTimerZ = 0;
-		}
-
-
-		//TODO: Add flag to only run this once
-		if (stupidTimerZ == 1 && (int)floor(camera.getCameraPosition().z) % cSize/2 == 0)
-		{
-			for (int i = 0; i < side; i++)
-				chunk.generateChunk(PX - cSize * i, PY, PZ, renderQueue);
-
-			PZ += cSize;
-			NZ += cSize;
-		}
 
 		glUseProgram(0);
 
