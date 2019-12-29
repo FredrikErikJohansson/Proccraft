@@ -47,8 +47,8 @@ void main()
 			
 	//TODO: Add noise
 	//Change color depending on position
-	if(Position.y <= 0.0) color = vec4(0.94f, 0.87f, 0.44f, 1.0f);
-    else color = vec4(0.4f, 1.0f, 0.2f, 1.0f);
+	if(Position.y <= 0.0) color = vec4(0.3f, 0.3f, 0.3f, 1.0f);
+    else color = vec4(0.8f, 0.9f, 1.0f, 1.0f);
 	
 	color = color * ( ambientColor + diffuseColor);
 }												

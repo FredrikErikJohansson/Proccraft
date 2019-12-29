@@ -60,25 +60,8 @@ int main()
 
 	int nbFrames = 0;
 	double lT = glfwGetTime();
-
-	const int wSize = 32;
 	const int cSize = 16;
-	const int side = (wSize / cSize);
-
-	int PX = -wSize;
-	int PY = -wSize;
-	int PZ = -wSize;
-
-	int NX = -side;
-	int NY = -side;
-	int NZ = -side;
-
-	int currentX = 0;
-	int currentY = 0;
-	int currentZ = 0;
-	
 	int counter = 0;
-	bool inside = true;
 
 	std::vector<std::vector<std::vector<bool>>> worldMap(64, std::vector<std::vector<bool>>(64, std::vector<bool>(64, false)));
 		
@@ -90,7 +73,7 @@ int main()
 	//shinyMaterial = Material(1.0f, 32.0f);
 	dullMaterial = Material(0.3f, 4.0f);
 
-	mainLight = Light(1.0f, 1.0f, 1.0f, 0.2f, 2.5f, 3.0f, -2.0f, 0.3f);
+	mainLight = Light(1.0f, 1.0f, 1.0f, 0.5f, 2.5f, 3.0f, -2.0f, 0.5f);
 
 	GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;
 	GLuint uniformAmbientIntensity = 0, uniformEyePosition = 0;
@@ -128,7 +111,7 @@ int main()
 		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
 		//Clear window
-		glClearColor(0.0f, 0.6f, 1.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shaderList[0]->UseShader();
@@ -150,31 +133,27 @@ int main()
 		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
 		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		//model = glm::rotate(model, increment * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		//model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
-		currentX = (int)floor(camera.getCameraPosition().x);
-		currentY = (int)floor(camera.getCameraPosition().y);
-		currentZ = (int)floor(camera.getCameraPosition().z);
+		int coordX = (int)floor(camera.getCameraPosition().x / 16);
+		int coordY = (int)floor(camera.getCameraPosition().y / 16);
+		int coordZ = (int)floor(camera.getCameraPosition().z / 16);
 
-		int coordX = (int)floor(currentX / 16);
-		int coordY = (int)floor(currentY / 16);
-		int coordZ = (int)floor(currentZ / 16);
-
-		for (int x = coordX - 4; x < coordX + 4; x++)
+		for (int x = coordX - 2; x < coordX + 2; x++)
 		{
-			for (int y = coordY - 4; y < coordY + 4; y++)
+			for (int y = coordY - 2; y < coordY + 2; y++)
 			{
-				for (int z = coordZ - 4; z < coordZ + 4; z++)
+				for (int z = coordZ - 2; z < coordZ + 2; z++)
 				{
-					if (x >= -32 && y >= -32 && z >= -32)
+					if (x >= -32 && x < 32 && y >= -32 && y < 32 && z >= -32 && z < 32)
 					{
 						if (!worldMap[x + 32][y + 32][z + 32])
 							chunk.generateChunk(x * cSize, y * cSize, z * cSize, renderQueue);
-
+							
 						worldMap[x + 32][y + 32][z + 32] = true;
 					}			
 				}

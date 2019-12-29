@@ -43,14 +43,13 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 				int posY = y - yPos;
 				int posZ = z - zPos;
 
-				int h = floor(amplitude * (glm::simplex(glm::vec3(x / 64.0f, y / 64.0f, z / 64.0f))));
-				//h += floor(amplitude/2 * (glm::simplex(glm::vec3(x / 64.0f, y / 64.0f, z / 64.0f))));
+				int h = floor(amplitude * (glm::simplex(glm::vec3(x / 32.0f, y / 64.0f, z / 32.0f))));
+				//h += floor(amplitude/2 * (glm::simplex(glm::vec3(x / 16.0f, y / 32.0f, z / 16.0f))));
 				if (h > 0)
 				{
 					blockMap[posX][posY][posZ] = true;
 				}	
 
-				//Skip first one
 				if (posX > 1 && posY > 1 && posZ > 1)
 				{
 					//Current block
@@ -112,8 +111,7 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 					//Check all surrounding blocks
 					if (!blockMap[posX - 1][posY][posZ])
 					{
-						for (int i = 0; i < 24; i++)
-							chunkVertices[i + 24 * counter] = vertNX[i];
+						std::copy(vertNX, vertNX + 24, chunkVertices + 24 * counter);
 
 						for (int i = 0; i < 6; i++)
 							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
@@ -123,8 +121,7 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 
 					if (!blockMap[posX + 1][posY][posZ])
 					{
-						for (int i = 0; i < 24; i++)
-							chunkVertices[i + 24 * counter] = vertPX[i];
+						std::copy(vertPX, vertPX + 24, chunkVertices + 24 * counter);
 
 						for (int i = 0; i < 6; i++)
 							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
@@ -134,8 +131,7 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 
 					if (!blockMap[posX][posY - 1][posZ])
 					{
-						for (int i = 0; i < 24; i++)
-							chunkVertices[i + 24 * counter] = vertNY[i];
+						std::copy(vertNY, vertNY + 24, chunkVertices + 24 * counter);
 
 						for (int i = 0; i < 6; i++)
 							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
@@ -145,8 +141,7 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 
 					if (!blockMap[posX][posY + 1][posZ])
 					{
-						for (int i = 0; i < 24; i++)
-							chunkVertices[i + 24 * counter] = vertPY[i];
+						std::copy(vertPY, vertPY + 24, chunkVertices + 24 * counter);
 
 						for (int i = 0; i < 6; i++)
 							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
@@ -156,8 +151,7 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 
 					if (!blockMap[posX][posY][posZ - 1])
 					{
-						for (int i = 0; i < 24; i++)
-							chunkVertices[i + 24 * counter] = vertNZ[i];
+						std::copy(vertNZ, vertNZ + 24, chunkVertices + 24 * counter);
 
 						for (int i = 0; i < 6; i++)
 							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
@@ -167,8 +161,7 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 
 					if (!blockMap[posX][posY][posZ + 1])
 					{
-						for (int i = 0; i < 24; i++)
-							chunkVertices[i + 24 * counter] = vertPZ[i];
+						std::copy(vertPZ, vertPZ + 24, chunkVertices + 24 * counter);
 
 						for (int i = 0; i < 6; i++)
 							chunkIndices[i + 6 * counter] = ind[i] + 4 * counter;
