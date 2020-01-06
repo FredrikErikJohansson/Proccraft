@@ -133,9 +133,6 @@ int main()
 		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
 		glm::mat4 model(1.0f);
-		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		//model = glm::rotate(model, increment * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		//model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
