@@ -171,12 +171,18 @@ void main()
 
 	vec4 finalColor = CalcDirectionalLight();
 	
+	float noise1 = snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f))*0.05f)*0.1f;
+	float noise2 = snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f))*0.25f)*0.05f;
+	float noise3 = snoise(vec3(Position)*10)*0.01f;
+	float noise4 = step(snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f))*0.05f), 0.01f)*0.1f;
+	
 	//Noise for stones
 	color = vec4(0.3f, 0.3f, 0.3f, 1.0f);
-	color.x += snoise(vec3(Position)*0.1f)*0.02f;
-	color.x += snoise(vec3(Position)*10)*0.01f;
+	color.x += noise1 + noise2 + noise3;
+	
 	color.y = color.x;
 	color.z = color.x;
+
 	
 	color = color * finalColor;
 }												

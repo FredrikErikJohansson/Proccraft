@@ -32,13 +32,13 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 	GLfloat* chunkVertices = new GLfloat[n];
 	unsigned int* chunkIndices = new unsigned int[m];
 
+	#pragma omp parallel for ordered schedule(static,size*3)
 	for (int x = xPos; x < size + xPos + 2; x++)
 	{
 		for (int y = yPos; y < size + yPos + 2; y++)
 		{
 			for (int z = zPos; z < size + zPos + 2; z++)
 			{
-
 				int posX = x - xPos;
 				int posY = y - yPos;
 				int posZ = z - zPos;

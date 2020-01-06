@@ -61,14 +61,15 @@ int main()
 	int nbFrames = 0;
 	double lT = glfwGetTime();
 	const int cSize = 16;
+	const int wSize = 128;
 	int counter = 0;
 
-	std::vector<std::vector<std::vector<bool>>> worldMap(64, std::vector<std::vector<bool>>(64, std::vector<bool>(64, false)));
+	std::vector<std::vector<std::vector<bool>>> worldMap(wSize, std::vector<std::vector<bool>>(wSize, std::vector<bool>(wSize, false)));
 		
 	//CreateObjects();
 	CreateShaders();
 
-	camera = Camera(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.2f);
+	camera = Camera(glm::vec3(-10.0f, 10.0f, -20.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.2f);
 
 	//shinyMaterial = Material(1.0f, 32.0f);
 	dullMaterial = Material(0.3f, 4.0f);
@@ -96,21 +97,13 @@ int main()
 			renderQueue.erase(renderQueue.begin());
 		}
 
-		if (currentTime - lT >= 1.0) { // If last prinf() was more than 1 sec ago
-			// printf and reset timer
-			printf("%f ms/frame\n", 1000.0 / double(nbFrames));
-			nbFrames = 0;
-			lT += 1.0;	
-		}
-
-
 		//Handle input events
 		glfwPollEvents();
 		camera.keyControl(mainWindow.getKeys(), deltaTime);
 		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
 		//Clear window
-		glClearColor(0.0f, 0.0f, 1.1f, 1.0f);
+		glClearColor(0.0f, 0.1f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shaderList[0]->UseShader();
@@ -135,22 +128,30 @@ int main()
 		int coordY = (int)floor(camera.getCameraPosition().y / 16);
 		int coordZ = (int)floor(camera.getCameraPosition().z / 16);
 
-		for (int x = coordX - 2; x < coordX + 2; x++)
+		for (int x = coordX - 4; x < coordX + 4; x++)
 		{
-			for (int y = coordY - 2; y < coordY + 2; y++)
+			for (int y = coordY - 4; y < coordY + 4; y++)
 			{
-				for (int z = coordZ - 2; z < coordZ + 2; z++)
+				for (int z = coordZ - 4; z < coordZ + 4; z++)
 				{
-					if (x >= -32 && x < 32 && y >= -32 && y < 32 && z >= -32 && z < 32)
+					if (x >= -(wSize/2) && x < (wSize / 2) && y >= -(wSize / 2) && y < (wSize / 2) && z >= -(wSize / 2) && z < (wSize / 2))
 					{
-						if (!worldMap[x + 32][y + 32][z + 32])
+						if (!worldMap[x + (wSize / 2)][y + (wSize / 2)][z + (wSize / 2)])
 							chunk.generateChunk(x * cSize, y * cSize, z * cSize, renderQueue);
 							
-						worldMap[x + 32][y + 32][z + 32] = true;
+						worldMap[x + (wSize / 2)][y + (wSize / 2)][z + (wSize / 2)] = true;
 					}			
 				}
 			}
 		}
+
+		/*if (currentTime - lT >= 1.0) { // If last prinf() was more than 1 sec ago
+			// printf and reset timer
+			printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+			nbFrames = 0;
+			lT += 1.0;
+		}*/
+
 
 		for (size_t i = 0; i < chunkList.size(); i++)
 			chunkList[i]->renderChunk();
