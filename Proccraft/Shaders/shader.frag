@@ -111,7 +111,6 @@ float snoise(vec3 v)
                                 dot(p2,x2), dot(p3,x3) ) );
   }
 
-const int MAX_POINT_LIGHTS = 3;
 
 struct Light
 {
@@ -126,25 +125,13 @@ struct DirectionalLight
 	vec3 direction;
 };
 
-struct PointLight
-{
-	Light base;
-	vec3 position;
-	float constant;
-	float linear;
-	float exponent;
-};
-
 struct Material
 {
 	float specularIntensity;
 	float shininess;
 };
 
-uniform int pointLightCount;
-
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
 uniform Material material;
 uniform vec3 eyePosition;
@@ -178,28 +165,11 @@ vec4 CalcDirectionalLight()
 	return CalcLightByDirection(directionalLight.base, directionalLight.direction);
 }
 
-vec4 CalcPointLights()
-{
-	vec4 totalColor = vec4(0, 0, 0, 0);
-	for(int i = 0; i < pointLightCount; i++)
-	{
-		vec3 direction = vec3(Position) - pointLights[i].position;
-		float distance = length(direction);
-		direction = normalize(direction);
-		
-		vec4 color = CalcLightByDirection(pointLights[i].base, direction);
-		float attenuation = pointLights[i].exponent * distance *distance + pointLights[i].linear * distance + pointLights[i].constant; //ax^2 + bx + c
-		totalColor += ( color / attenuation);
-	}
-	
-	return totalColor;
-}
 
 void main()										
 {						
 
 	vec4 finalColor = CalcDirectionalLight();
-	finalColor += CalcPointLights();
 	
 	//Noise for stones
 	color = vec4(0.3f, 0.3f, 0.3f, 1.0f);

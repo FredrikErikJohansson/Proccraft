@@ -10,14 +10,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "CommonValues.h"
-
 #include "Window.h"
 #include "Chunk.h"
 #include "Shader.h"
 #include "Camera.h"
 #include "DirectionalLight.h"
-#include "PointLight.h"
 #include "Material.h"
 
 #include <glm/gtc/noise.hpp>
@@ -35,7 +32,6 @@ Material shinyMaterial;
 Material dullMaterial;
 
 DirectionalLight mainLight;
-PointLight pointLights[MAX_POINT_LIGHTS];
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
@@ -78,10 +74,6 @@ int main()
 	dullMaterial = Material(0.3f, 4.0f);
 
 	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f, 0.5f, 0.5f, 2.5f, 3.0f, -2.0f);
-
-	unsigned int pointLightCount = 0;
-	pointLights[0] = PointLight(0.0f, 1.0f, 0.0f, 0.1f, 1.0f, -4.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
-	pointLightCount++;
 
 	GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;
 	GLuint uniformEyePosition = 0;
@@ -130,8 +122,6 @@ int main()
 		uniformShininess = shaderList[0]->GetShininessLocation();
 
 		shaderList[0]->SetDirectionalLight(&mainLight);
-		shaderList[0]->SetPointLights(pointLights, pointLightCount);
-
 
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
