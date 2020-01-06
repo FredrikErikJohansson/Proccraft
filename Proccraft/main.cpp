@@ -10,11 +10,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "CommonValues.h"
+
 #include "Window.h"
 #include "Chunk.h"
 #include "Shader.h"
 #include "Camera.h"
-#include "Light.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
 #include "Material.h"
 
 #include <glm/gtc/noise.hpp>
@@ -31,7 +34,8 @@ Chunk chunk;
 Material shinyMaterial;
 Material dullMaterial;
 
-Light mainLight;
+DirectionalLight mainLight;
+PointLight pointLights[MAX_POINT_LIGHTS];
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
@@ -73,11 +77,14 @@ int main()
 	//shinyMaterial = Material(1.0f, 32.0f);
 	dullMaterial = Material(0.3f, 4.0f);
 
-	mainLight = Light(1.0f, 1.0f, 1.0f, 0.5f, 2.5f, 3.0f, -2.0f, 0.5f);
+	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f, 0.5f, 0.5f, 2.5f, 3.0f, -2.0f);
+
+	unsigned int pointLightCount = 0;
+	pointLights[0] = PointLight(0.0f, 1.0f, 0.0f, 0.1f, 1.0f, -4.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
+	pointLightCount++;
 
 	GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;
-	GLuint uniformAmbientIntensity = 0, uniformEyePosition = 0;
-	GLuint uniformAmbientColor = 0, uniformDiffuseIntensity = 0, uniformDirection = 0;
+	GLuint uniformEyePosition = 0;
 	GLuint uniformSpecularIntensity = 0, uniformShininess = 0;
 	glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
 
@@ -111,22 +118,20 @@ int main()
 		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
 		//Clear window
-		glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
+		glClearColor(0.0f, 0.0f, 1.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shaderList[0]->UseShader();
 		uniformModel = shaderList[0]->GetModelLocation();
 		uniformProjection = shaderList[0]->GetProjectionLocation();
 		uniformView = shaderList[0]->GetViewLocation();
-		uniformAmbientColor = shaderList[0]->GetAmbientColorLocation();
-		uniformAmbientIntensity = shaderList[0]->GetAmbientIntensityLocation();
-		uniformDiffuseIntensity = shaderList[0]->GetDiffuseIntensityLocation();
-		uniformDirection = shaderList[0]->GetDirectionLocation();
 		uniformEyePosition = shaderList[0]->GetEyePositionLocation();
 		uniformSpecularIntensity = shaderList[0]->GetSpecularIntensityLocation();
 		uniformShininess = shaderList[0]->GetShininessLocation();
 
-		mainLight.UseLight(uniformAmbientIntensity, uniformAmbientColor, uniformDiffuseIntensity, uniformDirection);
+		shaderList[0]->SetDirectionalLight(&mainLight);
+		shaderList[0]->SetPointLights(pointLights, pointLightCount);
+
 
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
