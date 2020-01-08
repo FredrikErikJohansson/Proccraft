@@ -18,6 +18,9 @@ public:
 
 	glm::vec3 getCameraPosition();
 
+	//Hack: be careful
+	GLfloat * getMovementSpeed();
+
 	glm::mat4 calculateViewMatrix();
 
 private:

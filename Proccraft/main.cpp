@@ -62,13 +62,14 @@ int main()
 	float yNoise = 40.0f;
 	float zNoise = 30.0f;
 	float amplitude = 10.0f;
+	//float cameraSpeed = 5.0f;
 
 	std::vector<std::vector<std::vector<bool>>> worldMap(wSize, std::vector<std::vector<bool>>(wSize, std::vector<bool>(wSize, false)));
 		
 	//CreateObjects();
 	CreateShaders();
 
-	camera = Camera(glm::vec3(-10.0f, 10.0f, -20.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 10.0f, 0.2f);
+	camera = Camera(glm::vec3(-10.0f, 10.0f, -20.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 8.0f, 0.2f);
 
 	//shinyMaterial = Material(1.0f, 32.0f);
 	dullMaterial = Material(0.3f, 4.0f);
@@ -160,6 +161,7 @@ int main()
 		ImGui::Text("Press 'R' to enable cursor");
 		ImGui::Text("Press 'F' to disable cursor");
 		ImGui::InputInt("View distance", &viewDist, 2);
+		ImGui::SliderFloat("Camera speed", camera.getMovementSpeed(), 1.0f, 40.0f);
 		ImGui::SliderFloat("Noise freq X", &xNoise, 8.0f, 128.0f);
 		ImGui::SliderFloat("Noise freq Y", &yNoise, 8.0f, 128.0f);
 		ImGui::SliderFloat("Noise freq Z", &zNoise, 8.0f, 128.0f);

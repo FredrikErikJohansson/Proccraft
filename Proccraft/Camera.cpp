@@ -70,6 +70,11 @@ glm::vec3 Camera::getCameraPosition()
 	return position;
 }
 
+GLfloat * Camera::getMovementSpeed()
+{
+	return &movementSpeed;
+}
+
 glm::mat4 Camera::calculateViewMatrix()
 {
 	return glm::lookAt(position, position + front, up);
