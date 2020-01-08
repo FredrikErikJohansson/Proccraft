@@ -175,14 +175,16 @@ void main()
 	float noise2 = snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f))*0.25f)*0.05f;
 	float noise3 = snoise(vec3(Position)*10)*0.01f;
 	float noise4 = step(snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f))*0.05f), 0.01f)*0.1f;
+	float noise5 = snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f)*0.5f))*0.25f;
+	if(noise4 > 0 && noise5 > 0)
+		noise4 += noise5 + noise3;
 	
 	//Noise for stones
 	color = vec4(0.3f, 0.3f, 0.3f, 1.0f);
 	color.x += noise1 + noise2 + noise3;
 	
-	color.y = color.x;
+	color.y = color.x + noise4*0.2f;
 	color.z = color.x;
 
-	
 	color = color * finalColor;
 }												

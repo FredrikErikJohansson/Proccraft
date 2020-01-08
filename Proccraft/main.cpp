@@ -128,29 +128,40 @@ int main()
 		int coordY = (int)floor(camera.getCameraPosition().y / 16);
 		int coordZ = (int)floor(camera.getCameraPosition().z / 16);
 
-		for (int x = coordX - 4; x < coordX + 4; x++)
+		int countbaba = 0;
+
+		//View distance = 5, render 5^2 chunks for every camera movement of 16 voxels
+		for (int x = coordX - 2; x < coordX + 3; x++)
 		{
-			for (int y = coordY - 4; y < coordY + 4; y++)
+			for (int y = coordY - 2; y < coordY + 3; y++)
 			{
-				for (int z = coordZ - 4; z < coordZ + 4; z++)
+				for (int z = coordZ - 2; z < coordZ + 3; z++)
 				{
 					if (x >= -(wSize/2) && x < (wSize / 2) && y >= -(wSize / 2) && y < (wSize / 2) && z >= -(wSize / 2) && z < (wSize / 2))
 					{
 						if (!worldMap[x + (wSize / 2)][y + (wSize / 2)][z + (wSize / 2)])
+						{
 							chunk.generateChunk(x * cSize, y * cSize, z * cSize, renderQueue);
+							countbaba++;
+						}
+							
 							
 						worldMap[x + (wSize / 2)][y + (wSize / 2)][z + (wSize / 2)] = true;
+						
 					}			
 				}
 			}
 		}
 
-		/*if (currentTime - lT >= 1.0) { // If last prinf() was more than 1 sec ago
+		if(countbaba != 0)
+			std::cout << countbaba << std::endl;
+
+		if (currentTime - lT >= 1.0) { // If last prinf() was more than 1 sec ago
 			// printf and reset timer
 			printf("%f ms/frame\n", 1000.0 / double(nbFrames));
 			nbFrames = 0;
 			lT += 1.0;
-		}*/
+		}
 
 
 		for (size_t i = 0; i < chunkList.size(); i++)

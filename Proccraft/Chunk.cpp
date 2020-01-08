@@ -32,7 +32,7 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 	GLfloat* chunkVertices = new GLfloat[n];
 	unsigned int* chunkIndices = new unsigned int[m];
 
-	#pragma omp parallel for ordered schedule(static,size*3)
+	//#pragma omp parallel for ordered schedule(static,size+2)
 	for (int x = xPos; x < size + xPos + 2; x++)
 	{
 		for (int y = yPos; y < size + yPos + 2; y++)
@@ -43,7 +43,7 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 				int posY = y - yPos;
 				int posZ = z - zPos;
 
-				int h = floor(amplitude * (glm::simplex(glm::vec3(x / 32.0f, y / 64.0f, z / 32.0f))));
+				int h = floor(amplitude * (glm::simplex(glm::vec3(x / 30.0f, y / 40.0f, z / 30.0f))));
 				//h += floor(amplitude/2 * (glm::simplex(glm::vec3(x / 16.0f, y / 32.0f, z / 16.0f))));
 				if (h > 0)
 				{
