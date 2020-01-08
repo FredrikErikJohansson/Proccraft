@@ -6,19 +6,6 @@ in vec3 FragPos;
 
 out vec4 color;
 
-
-//
-// Description : Array and textureless GLSL 2D/3D/4D simplex 
-//               noise functions.
-//      Author : Ian McEwan, Ashima Arts.
-//  Maintainer : stegu
-//     Lastmod : 20110822 (ijm)
-//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.
-//               Distributed under the MIT License. See LICENSE file.
-//               https://github.com/ashima/webgl-noise
-//               https://github.com/stegu/webgl-noise
-// 
-
 vec3 mod289(vec3 x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
 }
@@ -176,11 +163,13 @@ void main()
 	float noise3 = snoise(vec3(Position)*10)*0.01f;
 	float noise4 = step(snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f))*0.05f), 0.01f)*0.1f;
 	float noise5 = snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f)*0.5f))*0.25f;
+	
 	if(noise4 > 0 && noise5 > 0)
 		noise4 += noise5 + noise3;
+
+	color = vec4(0.3f, 0.3f, 0.3f, 1.0f);
 	
 	//Noise for stones
-	color = vec4(0.3f, 0.3f, 0.3f, 1.0f);
 	color.x += noise1 + noise2 + noise3;
 	
 	color.y = color.x + noise4*0.2f;

@@ -17,11 +17,10 @@ std::vector<GLfloat> Chunk::getEdgeVertices()
 	return edgeVertices;
 }
 
-void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chunkList)
+void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chunkList, float xNoise, float yNoise, float zNoise, float amplitude)
 {
 	int counter = 0;
 	const int size = 16;
-	float amplitude = 10.0f;
 
 	//Make it two voxels larger than the chunk in each axis
 	std::vector<std::vector<std::vector<bool>>> blockMap(size + 2, std::vector<std::vector<bool>>(size + 2, std::vector<bool>(size + 2, false)));
@@ -43,7 +42,7 @@ void Chunk::generateChunk(int xPos, int yPos, int zPos, std::vector<Chunk*>& chu
 				int posY = y - yPos;
 				int posZ = z - zPos;
 
-				int h = floor(amplitude * (glm::simplex(glm::vec3(x / 30.0f, y / 40.0f, z / 30.0f))));
+				int h = floor(amplitude * (glm::simplex(glm::vec3(x / xNoise, y / yNoise, z / zNoise))));
 				//h += floor(amplitude/2 * (glm::simplex(glm::vec3(x / 16.0f, y / 32.0f, z / 16.0f))));
 				if (h > 0)
 				{

@@ -50,6 +50,11 @@ int Window::Initialize()
 	//Set context for GLEW
 	glfwMakeContextCurrent(mainWindow);
 
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
+	ImGui_ImplOpenGL3_Init("#version 130");
+
 	//Handle key and mouse input
 	createCallbacks();
 	glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -73,6 +78,11 @@ int Window::Initialize()
 	glfwSetWindowUserPointer(mainWindow, this);
 
 	return 0;
+}
+
+GLFWwindow* Window::getWindow()
+{
+	return mainWindow;
 }
 
 GLfloat Window::getBufferWidth() 
