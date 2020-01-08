@@ -1,8 +1,8 @@
 #version 330								
 
 in vec3 Normal;	
-in vec4 Position;	
-in vec3 FragPos;				
+in vec4 Position;			
+in vec4 viewSpace;
 
 out vec4 color;
 
@@ -134,7 +134,7 @@ vec4 CalcLightByDirection(Light light, vec3 direction)
 	
 	if(diffuseFactor > 0.0f)
 	{
-		vec3 fragToEye = normalize(eyePosition - FragPos);
+		vec3 fragToEye = normalize(eyePosition - Position.xyz);
 		vec3 reflectedVertex = normalize(reflect(direction, normalize(Normal)));
 		float specularFactor = dot(fragToEye, reflectedVertex);
 		if(specularFactor > 0.0f)
@@ -152,12 +152,25 @@ vec4 CalcDirectionalLight()
 	return CalcLightByDirection(directionalLight.base, directionalLight.direction);
 }
 
+const vec3 fogColor = vec3(0.0f, 0.1f,0.2f);
+const float FogDensity = 0.02f;
 
 void main()										
-{						
-
+{					
+	float fogFactor = 0;	
+	float dist = length(viewSpace);
+	
 	vec4 finalColor = CalcDirectionalLight();
 	
+	//Linear fog
+	//fogFactor = (80 - dist)/(80 - 20);
+	//fogFactor = clamp( fogFactor, 0.0, 1.0 );
+
+	//Exponential fog
+	fogFactor = 1.0 /exp(dist * FogDensity);
+	fogFactor = clamp( fogFactor, 0.0, 1.0 );
+   
+
 	float noise1 = snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f))*0.05f)*0.1f;
 	float noise2 = snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f))*0.25f)*0.05f;
 	float noise3 = snoise(vec3(Position)*10)*0.01f;
@@ -176,4 +189,5 @@ void main()
 	color.z = color.x;
 
 	color = color * finalColor;
+	color = mix(color, vec4(fogColor, 1.0f), (1.0f - fogFactor));
 }												
