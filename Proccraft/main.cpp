@@ -87,7 +87,8 @@ int main()
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
-		if (currentTime - lT >= 0.1 && renderQueue.size() > 0)
+		//if (currentTime - lT >= 0.1 && renderQueue.size() > 0)
+		if (renderQueue.size() > 0)
 		{
 			chunkList.push_back(renderQueue.back());
 			renderQueue.pop_back();
@@ -105,7 +106,7 @@ int main()
 			glfwSetInputMode(mainWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		//Clear window
-		glClearColor(0.0f, 0.1f, 0.2f, 1.0f);
+		glClearColor(0.0f, 0.3f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shaderList[0]->UseShader();

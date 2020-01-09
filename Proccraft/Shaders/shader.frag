@@ -152,8 +152,8 @@ vec4 CalcDirectionalLight()
 	return CalcLightByDirection(directionalLight.base, directionalLight.direction);
 }
 
-const vec3 fogColor = vec3(0.0f, 0.1f,0.2f);
-const float FogDensity = 0.02f;
+const vec3 fogColor = vec3(0.0f, 0.3f,0.6f);
+const float FogDensity = 0.01f;
 
 void main()										
 {					
