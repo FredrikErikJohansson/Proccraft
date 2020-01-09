@@ -170,7 +170,6 @@ void main()
 	fogFactor = 1.0 /exp(dist * FogDensity);
 	fogFactor = clamp( fogFactor, 0.0, 1.0 );
    
-
 	float noise1 = snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f))*0.05f)*0.1f;
 	float noise2 = snoise(floor(vec3(Position.x + 0.5f, Position.y + 0.5f, Position.z + 0.5f))*0.25f)*0.05f;
 	float noise3 = snoise(vec3(Position)*10)*0.01f;
@@ -189,5 +188,5 @@ void main()
 	color.z = color.x;
 
 	color = color * finalColor;
-	color = mix(color, vec4(fogColor, 1.0f), (1.0f - fogFactor));
+	color = mix(color*1.5f, vec4(fogColor, 1.0f), (1.0f - fogFactor));
 }												

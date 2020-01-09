@@ -62,7 +62,6 @@ int main()
 	float yNoise = 40.0f;
 	float zNoise = 30.0f;
 	float amplitude = 10.0f;
-	//float cameraSpeed = 5.0f;
 
 	std::vector<std::vector<std::vector<bool>>> worldMap(wSize, std::vector<std::vector<bool>>(wSize, std::vector<bool>(wSize, false)));
 		
@@ -90,8 +89,8 @@ int main()
 
 		if (currentTime - lT >= 0.1 && renderQueue.size() > 0)
 		{
-			chunkList.push_back(*renderQueue.begin());
-			renderQueue.erase(renderQueue.begin());
+			chunkList.push_back(renderQueue.back());
+			renderQueue.pop_back();
 		}
 
 		//Handle input events
