@@ -132,6 +132,7 @@ int main()
 		int coordZ = (int)floor(camera.getCameraPosition().z / 16);
 
 		//View distance = 5, render 5^2 chunks for every camera movement of 16 voxels
+		
 		for (int x = coordX - (viewDist-1); x < coordX + viewDist; x++)
 		{
 			for (int y = coordY - (viewDist-1); y < coordY + viewDist; y++)
@@ -153,33 +154,33 @@ int main()
 			chunkList[i]->renderChunk();
 
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		// ImGui_ImplOpenGL3_NewFrame();
+		// ImGui_ImplGlfw_NewFrame();
+		// ImGui::NewFrame();
 
-		ImGui::Begin("Proccraft");
-		ImGui::Text("Press 'R' to enable cursor");
-		ImGui::Text("Press 'F' to disable cursor");
-		ImGui::InputInt("View distance", &viewDist, 2);
-		ImGui::SliderFloat("Camera speed", camera.getMovementSpeed(), 1.0f, 40.0f);
-		ImGui::SliderFloat("Noise freq X", &xNoise, 8.0f, 128.0f);
-		ImGui::SliderFloat("Noise freq Y", &yNoise, 8.0f, 128.0f);
-		ImGui::SliderFloat("Noise freq Z", &zNoise, 8.0f, 128.0f);
-		ImGui::SliderFloat("Noise ampltude", &amplitude, 2.0f, 30.0f);
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
+		// ImGui::Begin("Proccraft");
+		// ImGui::Text("Press 'R' to enable cursor");
+		// ImGui::Text("Press 'F' to disable cursor");
+		// ImGui::InputInt("View distance", &viewDist, 2);
+		// ImGui::SliderFloat("Camera speed", camera.getMovementSpeed(), 1.0f, 40.0f);
+		// ImGui::SliderFloat("Noise freq X", &xNoise, 8.0f, 128.0f);
+		// ImGui::SliderFloat("Noise freq Y", &yNoise, 8.0f, 128.0f);
+		// ImGui::SliderFloat("Noise freq Z", &zNoise, 8.0f, 128.0f);
+		// ImGui::SliderFloat("Noise ampltude", &amplitude, 2.0f, 30.0f);
+		// ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		// ImGui::End();
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		// ImGui::Render();
+		// ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glUseProgram(0);
 
 		mainWindow.swapBuffers();
 	}
 
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
+	// ImGui_ImplOpenGL3_Shutdown();
+	// ImGui_ImplGlfw_Shutdown();
+	// ImGui::DestroyContext();
 	glfwTerminate();
 	return 0;
 }
